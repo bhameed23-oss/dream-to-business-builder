@@ -1,119 +1,87 @@
-# Dream to Business Builder
+# Dream to Business Builder MVP
 
-A security-first, open-source, business lifecycle framework for people who want to build, run, improve, scale, protect, and eventually exit a business with more clarity and less chaos.
+This project is a working MVP for a business lifecycle review app that helps founders and small business owners understand their current business phase, surface major risks, and identify the next most important actions.
 
-## Mission
+## Project purpose
 
-To help anyone, regardless of background or skill level, move through the full business lifecycle with a clear structure, practical tools, and safety-first guidance.
+The app helps a user:
+- choose their business situation
+- answer a short intake
+- generate a business profile
+- determine their current lifecycle phase
+- view a business health score
+- review key risks and next actions
+- return later to update the same profile
 
-We help people:
-- start a business from idea to first structure
-- operate it more cleanly and reliably
-- audit what is working and what is not
-- scale without losing control
-- fix compliance and security gaps
-- automate the right tasks without overbuilding
-- assess exit and investor readiness
-- connect the tools they already use
+## Current status
 
-## Why this project exists
+The core MVP is implemented in the browser with:
+- homepage and hero section
+- onboarding questionnaire
+- business profile generation logic
+- phase recommendation engine
+- health score and risk summary
+- action items based on business state
+- persistence using localStorage
 
-Many brilliant people have ideas, energy, and skills but no clear path to turn that into a real business. Others have a business that works but is fragile, chaotic, manual, or hard to scale. Many are also not deeply technical and do not know where to begin when it comes to legal, privacy, security, automation, or growth.
-
-This project is designed to help people navigate all of that with structured guidance and practical review.
-
-## The Business Lifecycle
-
-This project is organized around the full business lifecycle:
-
-1. Creation
-2. Operation
-3. Auditing
-4. Scaling
-5. Compliance Catch-Up
-6. Automation & Systems Upgrade
-7. Exit Readiness
-
-Each phase has a distinct purpose and a clear process.
-
-## Core design goals
-
-- Beginner-friendly, plain-language guidance
-- Expert-grade depth where needed
-- Safety-first and compliance-aware by default
-- Real-world problem solving
-- Not just idea generation; also operational and strategic support
-- A path for existing businesses, not only new ones
-- Clear review gates before risky decisions
-- Support for human review and professional consultation
-- Integration-ready design for APIs, CLIs, and AI tooling
-
-## The project structure
+## MVP structure
 
 ```text
 /
+├── app/
+│   ├── index.html
+│   ├── app.js
+│   └── styles.css
 ├── README.md
-├── PROJECT-OVERVIEW.md
-├── START-HERE.md
-├── CONTRIBUTING.md
-├── framework/
-│   ├── README.md
-│   ├── business-lifecycle/
-│   │   ├── 01-creation/
-│   │   ├── 02-operation/
-│   │   ├── 03-auditing/
-│   │   ├── 04-scaling/
-│   │   ├── 05-compliance-catch-up/
-│   │   ├── 06-automation-and-systems-upgrade/
-│   │   ├── 07-exit-readiness/
-│   │   └── shared/
-│   ├── prompts/
-│   └── business-profile/
-├── security/
-├── legal/
-├── design/
-├── business-packs/
-├── community/
-├── integration/
+├── product/
+│   ├── mvp-product-spec.md
+│   ├── mvp-implementation-plan.md
+│   ├── business-profile-schema.md
+│   ├── app-structure.md
+│   └── onboarding-questions.md
 ├── website/
-└── examples/
+│   ├── homepage-wireframe.md
+│   ├── landing-page-blueprint.md
+│   └── final-product-narrative.md
+└── framework/
+    └── final-lifecycle-experience-summary.md
 ```
 
-## Safety-first philosophy
+## How to run
 
-This project takes a security-first and compliance-aware approach from the beginning. It helps users identify where risk is present and when they should pause for professional review.
+Open `app/index.html` in a browser, or serve the folder with a simple local web server.
 
-This is not legal advice, not a substitute for compliance review, and not a replacement for technical security expertise.
+Example:
 
-## Community and contribution model
+```bash
+cd dream-to-business-builder
+python -m http.server 8000
+```
 
-This project is designed to be open to contributions from:
-- founders and operators
-- designers
-- developers
-- security experts
-- lawyers and compliance professionals
-- marketers
-- automation specialists
-- community members who want to help others build better businesses
+Then open:
 
-## What we are building
+```text
+http://localhost:8000/app/
+```
 
-We are building a system that helps a person or business move through the full lifecycle with clarity, without having to jump between ten disconnected tools and guides.
+## MVP value proposition
 
-The goal is to help people do three things:
-- start better
-- operate better
-- exit or grow better
+The product gives people a practical way to answer a simple question:
 
-## Recommended next steps
+What phase is my business in right now, what is the main risk, and what should I do next?
 
-1. Review the lifecycle structure and the business profile concept
-2. Build the lifecycle phase files and starter documents
-3. Add integration support for APIs, CLIs, and AI connectors
-4. Create a clearer onboarding flow for business creation and auditing
-5. Add scaling, compliance catch-up, and exit modules
+This is the foundation for a broader lifecycle system that can later grow into deeper guidance, more advanced scoring, and workflow integration.
 
-## License
+## Future roadmap
 
-MIT
+Planned next steps:
+- improve UI polish and product copy
+- add stronger phase detail screens
+- add more realistic lifecycle logic and scoring
+- support editing and resetting the saved profile
+- add sample business profiles
+- add deeper privacy, compliance, and automation modules
+
+## Notes
+
+This is an MVP and should be treated as a product foundation rather than a final production app.
