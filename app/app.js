@@ -42,7 +42,8 @@ const getProfileFromForm = (formData) => {
   const riskPosture = Number(formData.riskPosture || 3);
   const automation = Number(formData.automation || 2);
 
-  const healthScore = Math.min(100, Math.max(0, Math.round(((clarity + operations + riskPosture + automation) / 20) * 100 / 4)));
+  const weightedHealth = (clarity * 0.3) + (operations * 0.35) + (riskPosture * 0.2) + (automation * 0.15);
+  const healthScore = Math.min(100, Math.max(0, Math.round((weightedHealth / 5) * 100)));
 
   const situation = formData.situation || 'new-business';
   const phase = recommendPhase(situation, clarity, operations, riskPosture, automation);
@@ -191,6 +192,26 @@ const generateActionItems = (phase, goals, painPoints, tools) => {
   return [...new Set(result)].slice(0, 5);
 };
 
+const getHealthBand = (score) => {
+  if (score >= 80) return 'Strong';
+  if (score >= 60) return 'Healthy';
+  if (score >= 40) return 'Watchlist';
+  return 'Critical';
+};
+
+const updateScoreRing = (score) => {
+  const ring = document.querySelector('.score-ring');
+  if (!ring) return;
+
+  const clamped = Math.max(0, Math.min(100, score));
+  const level = clamped >= 80 ? 'strong' : clamped >= 60 ? 'healthy' : clamped >= 40 ? 'watch' : 'critical';
+  const color = clamped >= 80 ? 'var(--accent)' : clamped >= 60 ? '#3b82f6' : clamped >= 40 ? 'var(--warning)' : 'var(--danger)';
+
+  ring.style.background = `conic-gradient(${color} 0 ${clamped}%, var(--panel-soft) ${clamped}% 100%)`;
+  ring.dataset.level = level;
+  ring.innerHTML = `<span class="ring-value">${clamped}</span>`;
+};
+
 const renderPhaseText = (phaseKey) => {
   const phase = PHASES[phaseKey] || PHASES.operation;
   return phase.title + ': ' + phase.description;
@@ -212,12 +233,21 @@ const renderProfile = (profile) => {
   const actionItems = document.getElementById('action-items');
   const phaseDetail = document.getElementById('phase-detail');
   const reviewBadge = document.getElementById('review-badge');
+  const healthStatus = document.getElementById('health-status');
 
   phaseTitle.textContent = PHASES[profile.currentPhase]?.title || 'Business phase';
-  healthScore.textContent = `${profile.healthScore}`;
+  const scoreValue = Number(profile.healthScore || 0);
+  healthScore.textContent = `${scoreValue}/100`;
   primaryRisk.textContent = profile.primaryRisk;
   recommendation.textContent = renderPhaseText(profile.currentPhase);
   phaseDetail.textContent = renderPhaseDetail(profile.currentPhase);
+
+  if (healthStatus) {
+    healthStatus.textContent = getHealthBand(scoreValue);
+    healthStatus.dataset.level = scoreValue >= 80 ? 'strong' : scoreValue >= 60 ? 'healthy' : scoreValue >= 40 ? 'watch' : 'critical';
+  }
+
+  updateScoreRing(scoreValue);
 
   const summary = [
     `${profile.businessName} is a ${profile.businessType.replace('-', ' ')} business.`,
@@ -229,14 +259,8 @@ const renderProfile = (profile) => {
   riskFlags.innerHTML = profile.riskFlags.map((item) => `<li>${item}</li>`).join('');
   actionItems.innerHTML = profile.actionItems.map((item) => `<li>${item}</li>`).join('');
 
-  if (profile.reviewRecommended) {
-    reviewBadge.textContent = 'Professional review recommended';
-    reviewBadge.style.display = 'inline-flex';
-  } else {
-    reviewBadge.textContent = 'Review recommended';
-    reviewBadge.style.display = 'inline-flex';
-  }
-
+  reviewBadge.textContent = profile.reviewRecommended ? 'Professional review recommended' : 'Review recommended';
+  reviewBadge.dataset.level = profile.reviewRecommended ? 'critical' : 'watch';
   dashboard.classList.remove('hidden');
   document.getElementById('intake').classList.add('hidden');
 };
@@ -321,6 +345,7 @@ const bindActions = () => {
 const initialize = () => {
   bindRangeValues();
   bindActions();
+  updateScoreRing(72);
 
   const savedProfile = loadProfile();
   if (savedProfile) {
