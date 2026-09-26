@@ -1,58 +1,45 @@
 # Start Here
 
-This project is designed to be welcoming and practical.
+This project is now designed around a full business lifecycle. It is meant to help people build, run, improve, scale, secure, and eventually exit a business with more structure and less chaos.
 
-## The simplest path
+## Core question
 
-If you are new to this project, start here:
+What phase of the business lifecycle are you in right now?
+
+Choose one of the following:
+
+- Creation
+- Operation
+- Auditing
+- Scaling
+- Compliance Catch-Up
+- Automation & Systems Upgrade
+- Exit Readiness
+
+## Recommended path
+
+If you are new to the project, start here:
 
 1. Read [README.md](./README.md)
 2. Read [PROJECT-OVERVIEW.md](./PROJECT-OVERVIEW.md)
-3. Review [framework/README.md](./framework/README.md)
-4. Review [security/README.md](./security/README.md)
-5. Read the example business pack you most relate to
-6. Use the intake questions and planning flow
+3. Review the lifecycle folder under [framework/business-lifecycle/README.md](./framework/business-lifecycle/README.md)
+4. Identify the phase that matches your needs
+5. Review the relevant starter files and checklists
+6. Proceed in stages and review risk before moving forward
 
-## Key principles for users
+## Important reminder
 
-- Ask for help if you are unsure
-- Read the warnings and review questions carefully
-- Do not launch sensitive systems without review
-- Seek professional support when doing something risky or regulated
-- Build a clear plan before building a brand, website, or automations
-- Start simple and grow when ready
+This project is educational and strategic, not legal, security, or financial advice. Professional review may be necessary in many situations.
 
-## Example questions users may be asked
+## The project experience
 
-- What kind of business are you building?
-- Who are your customers?
-- What do you sell or provide?
-- Where do you operate?
-- What tasks are manual or time-consuming?
-- What information do you collect from customers?
-- What are your biggest growth or operations pain points?
-- What is your current budget, time, and skill level?
-- What tools do you already use?
-- What would you like the AI or automation to do for you?
+Users should feel supported, not overwhelmed. The system should help them pick the right phase, ask the right questions, and proceed in a way that is understandable and safe.
 
-## Important note
+## The lifecycle values
 
-This framework is here to help people start and improve. It does not remove risk. It is not a substitute for real professional review in regulated or risky situations.
-
-## The recommended approach
-
-For many users, the best path is:
-
-1. identify the business idea
-2. gather essential information
-3. review security and compliance barriers
-4. build the plan
-5. present options and a recommended path
-6. get approval before launch
-7. move in phases
-
-## A good mindset
-
-The goal is not to build a giant complicated system immediately. The goal is to build the right system for the right business in the right phase. 
-
-That is more sustainable, safer, and more likely to create real results.
+- start with clarity
+- build in stages
+- review the real risks
+- improve without chaos
+- make the business easier to run and scale
+- prepare for future opportunities and exit decisions

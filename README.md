@@ -1,147 +1,119 @@
 # Dream to Business Builder
 
-A security-first, open-source framework to help people turn ideas into businesses using AI, automation, human review, design, strategy, and structured checklists.
-
-This project is built to empower dreamers, founders, operators, and small businesses by guiding them through a practical process:
-
-- discover the business idea
-- build the business structure
-- assess risks and compliance
-- design a customer-facing system
-- build automations and workflows
-- review and refine before launch
-- improve over time
-
-The project intentionally combines:
-- beginner-friendly plain language
-- powerful automation guidance
-- safety guardrails
-- professional review triggers
-- community-driven expert modules
+A security-first, open-source, business lifecycle framework for people who want to build, run, improve, scale, protect, and eventually exit a business with more clarity and less chaos.
 
 ## Mission
 
-To help anyone, regardless of technical skill, move from idea to a more organized, more scalable, and more professional business foundation.
+To help anyone, regardless of background or skill level, move through the full business lifecycle with a clear structure, practical tools, and safety-first guidance.
 
-## Principles
+We help people:
+- start a business from idea to first structure
+- operate it more cleanly and reliably
+- audit what is working and what is not
+- scale without losing control
+- fix compliance and security gaps
+- automate the right tasks without overbuilding
+- assess exit and investor readiness
+- connect the tools they already use
 
-- Accessibility first
-- Plain language explanations
-- Safety and compliance as core requirements
-- Respect for human judgment
-- Open, reusable, hopeful, and practical
-- Empowering more people to build their dreams without building unnecessary risk
+## Why this project exists
 
-## Project Goals
+Many brilliant people have ideas, energy, and skills but no clear path to turn that into a real business. Others have a business that works but is fragile, chaotic, manual, or hard to scale. Many are also not deeply technical and do not know where to begin when it comes to legal, privacy, security, automation, or growth.
 
-- Help people define their business clearly
-- Help people identify missing systems, risks, and bottlenecks
-- Provide a usable question-driven process
-- Help them build a plan they can approve and execute
-- Provide expert-curated guides and templates
-- Support both simple businesses and more complex operations
-- Give beginners a path without overwhelming them
-- Give experts a way to contribute stronger versions of the framework
+This project is designed to help people navigate all of that with structured guidance and practical review.
 
-## What This Repository Includes
+## The Business Lifecycle
 
-- universal business intake and discovery processes
-- planning and assessment frameworks
-- design and brand guidance
-- automation strategy
-- security and compliance modules
-- expert contribution paths
-- industry-based example packs
-- future-ready website and portal structure
+This project is organized around the full business lifecycle:
 
-## Security-First Philosophy
+1. Creation
+2. Operation
+3. Auditing
+4. Scaling
+5. Compliance Catch-Up
+6. Automation & Systems Upgrade
+7. Exit Readiness
 
-This project is designed to require explicit review of risk before launch for sensitive workflows.
+Each phase has a distinct purpose and a clear process.
 
-The framework includes:
-- security training modules
-- compliance checklists
-- data protection guidance
-- policy templates
-- incident response templates
-- professional review triggers
-- legal escalation suggestions
-- openable gates before key steps
+## Core design goals
 
-The project says:
-- "This tool helps guide you. It does not replace legal or professional advice."
-- "If you are handling customer data, payments, regulated information, compliance-sensitive work, or high-risk processes, you should review with the appropriate professional before launch."
+- Beginner-friendly, plain-language guidance
+- Expert-grade depth where needed
+- Safety-first and compliance-aware by default
+- Real-world problem solving
+- Not just idea generation; also operational and strategic support
+- A path for existing businesses, not only new ones
+- Clear review gates before risky decisions
+- Support for human review and professional consultation
+- Integration-ready design for APIs, CLIs, and AI tooling
 
-## This Is Not Legal Advice
+## The project structure
 
-This project is educational and implementation-oriented. It does not replace:
-- lawyers
-- accountants
-- compliance officers
-- security professionals
-- insurers
-- private advisors
+```text
+/
+├── README.md
+├── PROJECT-OVERVIEW.md
+├── START-HERE.md
+├── CONTRIBUTING.md
+├── framework/
+│   ├── README.md
+│   ├── business-lifecycle/
+│   │   ├── 01-creation/
+│   │   ├── 02-operation/
+│   │   ├── 03-auditing/
+│   │   ├── 04-scaling/
+│   │   ├── 05-compliance-catch-up/
+│   │   ├── 06-automation-and-systems-upgrade/
+│   │   ├── 07-exit-readiness/
+│   │   └── shared/
+│   ├── prompts/
+│   └── business-profile/
+├── security/
+├── legal/
+├── design/
+├── business-packs/
+├── community/
+├── integration/
+├── website/
+└── examples/
+```
 
-## Who This Is For
+## Safety-first philosophy
 
-- people with a business idea but no roadmap
-- small business owners who need more structure
-- founders building their first website or process
-- agencies helping clients build systems
-- designers building customer experiences
-- operators trying to reduce manual work
-- advanced users building bigger automation systems
+This project takes a security-first and compliance-aware approach from the beginning. It helps users identify where risk is present and when they should pause for professional review.
 
-## Quick Start
+This is not legal advice, not a substitute for compliance review, and not a replacement for technical security expertise.
 
-See:
-- [PROJECT-OVERVIEW.md](./PROJECT-OVERVIEW.md)
-- [START-HERE.md](./START-HERE.md)
-- [framework/README.md](./framework/README.md)
-- [security/README.md](./security/README.md)
+## Community and contribution model
 
-## Recommended Roadmap
-
-1. Start with the intake and business discovery flow
-2. Review the security and compliance gates
-3. Build the business structure and marketing plan
-4. Design the customer journey and visual identity
-5. Create the operational workflows
-6. Build automation and integrations
-7. Review launch readiness and professional signoff
-8. Launch carefully and improve iteratively
-
-## Community Contributions
-
-This project is designed to accept expert contributions from:
-
-- lawyers
-- compliance specialists
-- security experts
+This project is designed to be open to contributions from:
+- founders and operators
 - designers
-- automations experts
-- agencies
-- founders
-- technical contributors
+- developers
+- security experts
+- lawyers and compliance professionals
+- marketers
+- automation specialists
+- community members who want to help others build better businesses
 
-See:
-- [CONTRIBUTING.md](./CONTRIBUTING.md)
-- [security/CONTRIBUTE-SECURITY.md](./security/CONTRIBUTE-SECURITY.md)
-- [legal/CONTRIBUTE-LEGAL.md](./legal/CONTRIBUTE-LEGAL.md)
-- [design/CONTRIBUTE-DESIGN.md](./design/CONTRIBUTE-DESIGN.md)
+## What we are building
+
+We are building a system that helps a person or business move through the full lifecycle with clarity, without having to jump between ten disconnected tools and guides.
+
+The goal is to help people do three things:
+- start better
+- operate better
+- exit or grow better
+
+## Recommended next steps
+
+1. Review the lifecycle structure and the business profile concept
+2. Build the lifecycle phase files and starter documents
+3. Add integration support for APIs, CLIs, and AI connectors
+4. Create a clearer onboarding flow for business creation and auditing
+5. Add scaling, compliance catch-up, and exit modules
 
 ## License
 
-MIT License.
-
-## Project Status
-
-This is a growing foundation intended to become:
-- a community-driven framework
-- a working business building system
-- a starter template library
-- a future website and demo experience at dream.belvi.casa
-
----
-
-This repository is intentionally designed to help people move from vision to action while building in the safeguards and guided review that reduce the chance of major risk.
+MIT

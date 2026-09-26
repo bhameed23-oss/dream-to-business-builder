@@ -1,78 +1,56 @@
 # Framework Overview
 
-This directory holds the core framework for the business-building process.
+This repo now follows a lifecycle-based structure. The framework is meant to guide the user through the full life of a business without leaving out the operational, strategic, and risk-related realities that matter most.
 
-## Contents
-
-- discovery
-- assessment
-- structure
-- compliance
-- brand and design
-- customer journey
-- operations
-- automation
-- planning
-- launch readiness
-- review and improvement
-
-## This system is intentionally structured
-
-The framework is meant to guide a user step by step while:
-- asking clear questions
-- explaining choices
-- protecting people from unreviewed risk
-- giving beginner-friendly instructions
-- helping experts contribute stronger modules
-
-## How the framework thinks
-
-The system should behave like a trusted advisor, not a chaotic AI output.
-
-It should:
-- ask one question at a time when needed
-- explain reasons clearly
-- show options instead of just a giant plan
-- recommend a safe path when uncertain
-- ask for approval before major actions
-- build in guardrails for risk
-
-## Directory structure
+## Lifecycle structure
 
 ```text
 framework/
 ├── README.md
-├── 01-discovery/
-├── 02-assessment/
-├── 03-business-structure/
-├── 04-compliance-and-risk/
-├── 05-brand-and-design/
-├── 06-customer-journey/
-├── 07-operations/
-├── 08-automation/
-├── 09-website-and-interfaces/
-├── 10-tool-stack/
-├── 11-launch-readiness/
-├── 12-review-and-improvement/
-├── 13-safeguards/
-├── 14-community-modules/
-└── prompts/
-    ├── beginner-mode.md
-    ├── expert-mode.md
-    ├── gauge-the-user.md
-    └── approval-checklist.md
+├── business-lifecycle/
+│   ├── README.md
+│   ├── 01-creation/
+│   ├── 02-operation/
+│   ├── 03-auditing/
+│   ├── 04-scaling/
+│   ├── 05-compliance-catch-up/
+│   ├── 06-automation-and-systems-upgrade/
+│   ├── 07-exit-readiness/
+│   └── shared/
+├── business-profile/
+├── prompts/
+├── beginner-path/
+├── expert-path/
+└── lifecycle-intake.md
 ```
 
-## Main framework idea
+## Framework principles
 
-The project should guide users through a practical series of milestones, including:
+- Every business has a lifecycle
+- Every lifecycle stage has different questions and risks
+- A business should be built, reviewed, and improved with structure
+- Scaling and exit require more than momentum
+- Compliance and safety are not optional
+- Automation should support clarity and trust, not create chaos
 
-- understand what the business actually is
-- assess gaps
-- organize the plan
-- decide what to build first
-- add design and brand direction
-- introduce compliance and security review
-- propose automation
-- prepare launch
-- review and iterate
+## Shared concepts
+
+The framework includes shared concepts that apply across the phases:
+
+- business profile
+- risk review
+- customer experience review
+- operations review
+- tool and integration review
+- compliance reminder triggers
+- professional review escalation
+- human approval checkpoints
+
+## Best fit
+
+This framework is for:
+- founders starting a business
+- existing business owners
+- agencies and consultants
+- operators trying to improve growth and structure
+- people who need guidance through legal, privacy, and security issues
