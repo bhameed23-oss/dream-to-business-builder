@@ -1,31 +1,38 @@
 const PHASES = {
   creation: {
     title: 'Creation',
-    description: 'You are building the foundation of the business and clarifying the offer, market, and early systems.'
+    description: 'You are building the foundation of the business and clarifying the offer, market, and early systems.',
+    guidance: 'Focus on clarifying the value proposition, defining the customer, and creating a simple delivery rhythm before adding more complexity.'
   },
   operation: {
     title: 'Operation',
-    description: 'You are running the business and need better systems, stability, and a less chaotic operating rhythm.'
+    description: 'You are running the business and need better systems, stability, and a less chaotic operating rhythm.',
+    guidance: 'Document the core process, improve visibility, and reduce manual effort so the business becomes more reliable and easier to run.'
   },
   auditing: {
     title: 'Auditing',
-    description: 'You need to evaluate whether the business is structurally sound and identify weak points before growth.'
+    description: 'You need to evaluate whether the business is structurally sound and identify weak points before growth.',
+    guidance: 'Review the business as a system. Look for process gaps, ownership gaps, inconsistent handoffs, and decision bottlenecks before taking on more scale.'
   },
   scaling: {
     title: 'Scaling',
-    description: 'You are ready to grow, but need clearer ownership, systems, and risk management.'
+    description: 'You are ready to grow, but need clearer ownership, systems, and risk management.',
+    guidance: 'Before growing, tighten your process, define who owns what, and make sure your systems can handle more volume without extra chaos.'
   },
   compliance: {
     title: 'Compliance Catch-Up',
-    description: 'You need to identify and address legal, privacy, and compliance gaps before they turn into serious risk.'
+    description: 'You need to identify and address legal, privacy, and compliance gaps before they turn into serious risk.',
+    guidance: 'Review where customer data, obligations, or sensitive workflows are exposed. If compliance gaps are significant, bring in professional review.'
   },
   automation: {
     title: 'Automation & Systems Upgrade',
-    description: 'You are improving workflows, reducing manual effort, and building the systems that support sustainable growth.'
+    description: 'You are improving workflows, reducing manual effort, and building the systems that support sustainable growth.',
+    guidance: 'Automate repeatable work only after you understand the workflow. The goal is consistency, visibility, and less operational drag.'
   },
   exit: {
     title: 'Exit Readiness',
-    description: 'You are preparing for transfer, sale, succession, or strategic transformation and need a clear readiness review.'
+    description: 'You are preparing for transfer, sale, succession, or strategic transformation and need a clear readiness review.',
+    guidance: 'Get the business into a clearer, more legible state. Review documentation, operations, key dependencies, and value-driving systems before a transition.'
   }
 };
 
@@ -35,12 +42,13 @@ const getProfileFromForm = (formData) => {
   const riskPosture = Number(formData.riskPosture || 3);
   const automation = Number(formData.automation || 2);
 
-  const healthScore = Math.round((clarity + operations + riskPosture + automation) / 4 * 20);
+  const healthScore = Math.min(100, Math.max(0, Math.round(((clarity + operations + riskPosture + automation) / 20) * 100 / 4)));
 
   const situation = formData.situation || 'new-business';
   const phase = recommendPhase(situation, clarity, operations, riskPosture, automation);
   const riskFlags = generateRiskFlags(phase, formData.mainRisk, formData.painPoints, formData.tools);
   const actionItems = generateActionItems(phase, formData.goals, formData.painPoints, formData.tools);
+  const reviewRecommended = shouldRecommendReview(phase, riskPosture, operations, healthScore);
 
   const profile = {
     id: `profile-${Date.now()}`,
@@ -48,8 +56,8 @@ const getProfileFromForm = (formData) => {
     businessType: formData.businessType || 'service-business',
     situation,
     currentPhase: phase,
-    goals: formData.goals ? formData.goals.split(/\n|,/).map((item) => item.trim()).filter(Boolean) : ['Clarify direction', 'Improve operations'],
-    painPoints: formData.painPoints ? formData.painPoints.split(/\n|,/).map((item) => item.trim()).filter(Boolean) : ['Operational inconsistency'],
+    goals: splitField(formData.goals, ['Clarify direction', 'Improve operations']),
+    painPoints: splitField(formData.painPoints, ['Operational inconsistency']),
     mainRisk: formData.mainRisk || 'Operational instability',
     customerSummary: formData.customerSummary || 'The business needs a clearer and more reliable customer experience.',
     toolSummary: formData.tools || 'Essential tools are being used, but process consistency is still developing.',
@@ -57,11 +65,29 @@ const getProfileFromForm = (formData) => {
     riskFlags,
     actionItems,
     primaryRisk: riskFlags[0] || 'Unclear operating rhythm',
+    reviewRecommended,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };
 
   return profile;
+};
+
+const splitField = (value, fallback) => {
+  if (!value) return fallback;
+  return value
+    .split(/\n|,/) 
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .slice(0, 4) || fallback;
+};
+
+const shouldRecommendReview = (phase, riskPosture, operations, healthScore) => {
+  if (phase === 'compliance') return true;
+  if (phase === 'exit') return true;
+  if (riskPosture <= 2) return true;
+  if (operations <= 2 && healthScore < 60) return true;
+  return false;
 };
 
 const recommendPhase = (situation, clarity, operations, riskPosture, automation) => {
@@ -101,7 +127,7 @@ const generateRiskFlags = (phase, mainRisk, painPoints, tools) => {
   if (phase === 'compliance') flags.push('Legal, privacy, or risk reviews may be behind');
   if (phase === 'automation') flags.push('Manual workflows are creating drag and inconsistency');
   if (phase === 'operation') flags.push('Operating rhythm is not yet stable');
-  if (painPoints) flags.push(...painPoints.split(/\n|,/).map((item) => item.trim()).filter(Boolean).slice(0, 2));
+  if (painPoints) flags.push(...splitField(painPoints, []).slice(0, 2));
   if (tools) flags.push('Tool stack may need better integration or standardization');
 
   return [...new Set(flags)].slice(0, 4);
@@ -148,13 +174,14 @@ const generateActionItems = (phase, goals, painPoints, tools) => {
 
   const result = [...baseActions[phase] || baseActions.operation];
 
-  if (goals) {
-    result.push(`Prioritize the goal: ${goals.split(/\n|,/)[0].trim() || 'clarify direction'}`);
+  const parsedGoals = splitField(goals, []);
+  if (parsedGoals.length) {
+    result.push(`Prioritize the goal: ${parsedGoals[0]}`);
   }
 
-  if (painPoints) {
-    const firstPainPoint = painPoints.split(/\n|,/).map((item) => item.trim()).filter(Boolean)[0];
-    if (firstPainPoint) result.push(`Address the biggest issue: ${firstPainPoint}`);
+  const parsedPainPoints = splitField(painPoints, []);
+  if (parsedPainPoints.length) {
+    result.push(`Address the biggest issue: ${parsedPainPoints[0]}`);
   }
 
   if (tools) {
@@ -169,6 +196,11 @@ const renderPhaseText = (phaseKey) => {
   return phase.title + ': ' + phase.description;
 };
 
+const renderPhaseDetail = (phaseKey) => {
+  const phase = PHASES[phaseKey] || PHASES.operation;
+  return phase.guidance;
+};
+
 const renderProfile = (profile) => {
   const dashboard = document.getElementById('dashboard');
   const phaseTitle = document.getElementById('phase-title');
@@ -178,11 +210,14 @@ const renderProfile = (profile) => {
   const profileSummary = document.getElementById('profile-summary');
   const riskFlags = document.getElementById('risk-flags');
   const actionItems = document.getElementById('action-items');
+  const phaseDetail = document.getElementById('phase-detail');
+  const reviewBadge = document.getElementById('review-badge');
 
   phaseTitle.textContent = PHASES[profile.currentPhase]?.title || 'Business phase';
   healthScore.textContent = `${profile.healthScore}`;
   primaryRisk.textContent = profile.primaryRisk;
   recommendation.textContent = renderPhaseText(profile.currentPhase);
+  phaseDetail.textContent = renderPhaseDetail(profile.currentPhase);
 
   const summary = [
     `${profile.businessName} is a ${profile.businessType.replace('-', ' ')} business.`,
@@ -191,9 +226,16 @@ const renderProfile = (profile) => {
   ].join(' ');
 
   profileSummary.textContent = summary;
-
   riskFlags.innerHTML = profile.riskFlags.map((item) => `<li>${item}</li>`).join('');
   actionItems.innerHTML = profile.actionItems.map((item) => `<li>${item}</li>`).join('');
+
+  if (profile.reviewRecommended) {
+    reviewBadge.textContent = 'Professional review recommended';
+    reviewBadge.style.display = 'inline-flex';
+  } else {
+    reviewBadge.textContent = 'Review recommended';
+    reviewBadge.style.display = 'inline-flex';
+  }
 
   dashboard.classList.remove('hidden');
   document.getElementById('intake').classList.add('hidden');
