@@ -198,16 +198,6 @@ const getHealthBand = (score) => {
   return 'Critical';
 };
 
-const renderPhaseText = (phaseKey) => {
-  const phase = PHASES[phaseKey] || PHASES.operation;
-  return phase.title + ': ' + phase.description;
-};
-
-const renderPhaseDetail = (phaseKey) => {
-  const phase = PHASES[phaseKey] || PHASES.operation;
-  return phase.guidance;
-};
-
 const updateScoreRing = (score) => {
   const ring = document.querySelector('.score-ring');
   if (!ring) return;
@@ -217,6 +207,16 @@ const updateScoreRing = (score) => {
   ring.style.background = `conic-gradient(${color} 0 ${clamped}%, var(--panel-soft) ${clamped}% 100%)`;
   ring.setAttribute('data-score', `${clamped}`);
   ring.style.setProperty('--score', `${clamped}`);
+};
+
+const renderPhaseText = (phaseKey) => {
+  const phase = PHASES[phaseKey] || PHASES.operation;
+  return phase.title + ': ' + phase.description;
+};
+
+const renderPhaseDetail = (phaseKey) => {
+  const phase = PHASES[phaseKey] || PHASES.operation;
+  return phase.guidance;
 };
 
 const renderProfile = (profile) => {
@@ -257,10 +257,8 @@ const renderProfile = (profile) => {
 
   if (profile.reviewRecommended) {
     reviewBadge.textContent = 'Professional review recommended';
-    reviewBadge.style.display = 'inline-flex';
   } else {
     reviewBadge.textContent = 'Review recommended';
-    reviewBadge.style.display = 'inline-flex';
   }
 
   dashboard.classList.remove('hidden');
