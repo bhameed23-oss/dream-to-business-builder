@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dream to Business Builder</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container nav">
+        <div class="brand">Dream to Business Builder</div>
+        <nav>
+          <a href="#home">Home</a>
+          <a href="#how-it-works">How it works</a>
+          <a href="#phases">Lifecycle</a>
+          <a href="#safety">Safety</a>
+        </nav>
+        <button class="primary-btn" id="start-review-btn">Start your review</button>
+      </div>
+    </header>
+
+    <main>
+      <section id="home" class="hero">
+        <div class="container hero-grid">
+          <div>
+            <p class="eyebrow">Business clarity for every stage of growth</p>
+            <h1>Build, run, improve, and grow your business with a clearer path.</h1>
+            <p class="lede">
+              A lifecycle operating system for founders and small business owners who need a practical path through business creation, operations, growth, risk, automation, and exit planning.
+            </p>
+            <div class="cta-row">
+              <button class="primary-btn" id="hero-start-btn">Start your business lifecycle review</button>
+              <button class="secondary-btn" id="learn-more-btn">Learn how it works</button>
+            </div>
+          </div>
+          <div class="hero-card">
+            <div class="mini-label">Current business health</div>
+            <div class="score-ring">72</div>
+            <ul>
+              <li>Clearer business direction</li>
+              <li>Risk-aware next steps</li>
+              <li>Safer growth decisions</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="how-it-works" class="section">
+        <div class="container">
+          <h2>How it works</h2>
+          <div class="steps-grid">
+            <div class="step-card">
+              <span>1</span>
+              <h3>Choose your situation</h3>
+              <p>Tell us where your business is right now.</p>
+            </div>
+            <div class="step-card">
+              <span>2</span>
+              <h3>Answer a few questions</h3>
+              <p>We gather the essentials without making it overwhelming.</p>
+            </div>
+            <div class="step-card">
+              <span>3</span>
+              <h3>See the current phase</h3>
+              <p>We recommend the right lifecycle phase and show the biggest priorities.</p>
+            </div>
+            <div class="step-card">
+              <span>4</span>
+              <h3>Follow the next best moves</h3>
+              <p>Get a practical action plan and revisit the same profile later.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="phases" class="section alt-section">
+        <div class="container">
+          <h2>Business lifecycle phases</h2>
+          <div class="phase-list">
+            <div>Creation</div>
+            <div>Operation</div>
+            <div>Auditing</div>
+            <div>Scaling</div>
+            <div>Compliance Catch-Up</div>
+            <div>Automation & Systems Upgrade</div>
+            <div>Exit Readiness</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="safety" class="section">
+        <div class="container narrow">
+          <h2>Safety-first guidance</h2>
+          <p>
+            The framework helps surface risk, highlight gaps, and recommend professional review when something needs more expertise. It is a structured guide, not a substitute for legal, financial, or compliance advice.
+          </p>
+        </div>
+      </section>
+
+      <section id="intake" class="section form-section hidden">
+        <div class="container form-wrapper">
+          <h2>Business lifecycle review</h2>
+          <form id="business-form">
+            <div class="form-grid">
+              <label>
+                Business name
+                <input type="text" id="businessName" name="businessName" placeholder="Example Studio" />
+              </label>
+
+              <label>
+                Business type
+                <select id="businessType" name="businessType">
+                  <option value="service-business">Service business</option>
+                  <option value="product-business">Product business</option>
+                  <option value="online-business">Online business</option>
+                  <option value="consulting">Consulting</option>
+                  <option value="local-business">Local business</option>
+                  <option value="creative-business">Creative business</option>
+                </select>
+              </label>
+
+              <label>
+                What situation best fits your business right now?
+                <select id="situation" name="situation">
+                  <option value="new-business">Starting a new business</option>
+                  <option value="improve-existing">Improving an existing business</option>
+                  <option value="grow-business">Growing the business</option>
+                  <option value="fix-risk">Fixing risk or compliance gaps</option>
+                  <option value="system-upgrade">Upgrading systems or automation</option>
+                  <option value="prepare-exit">Preparing to exit or transfer</option>
+                </select>
+              </label>
+
+              <label>
+                How clear is your business direction right now?
+                <input type="range" id="clarity" name="clarity" min="1" max="5" value="3" />
+                <span id="clarity-value" class="range-value">3 / 5</span>
+              </label>
+
+              <label>
+                How stable are your current operations?
+                <input type="range" id="operations" name="operations" min="1" max="5" value="3" />
+                <span id="operations-value" class="range-value">3 / 5</span>
+              </label>
+
+              <label>
+                How strong is your current risk and compliance posture?
+                <input type="range" id="riskPosture" name="riskPosture" min="1" max="5" value="3" />
+                <span id="riskPosture-value" class="range-value">3 / 5</span>
+              </label>
+
+              <label>
+                How mature is your current automation and systems setup?
+                <input type="range" id="automation" name="automation" min="1" max="5" value="2" />
+                <span id="automation-value" class="range-value">2 / 5</span>
+              </label>
+            </div>
+
+            <div class="textarea-grid">
+              <label>
+                What are your biggest goals over the next 30-90 days?
+                <textarea id="goals" name="goals" rows="4" placeholder="Improve customer flow, reduce delay, increase clarity, etc."></textarea>
+              </label>
+
+              <label>
+                What are your biggest pain points right now?
+                <textarea id="painPoints" name="painPoints" rows="4" placeholder="Manual follow-up, unclear buying process, inconsistent communication, etc."></textarea>
+              </label>
+
+              <label>
+                What is the main risk you are trying to manage?
+                <textarea id="mainRisk" name="mainRisk" rows="4" placeholder="Operational inconsistency, compliance drift, growth without process, etc."></textarea>
+              </label>
+
+              <label>
+                What tools or systems are you using today?
+                <textarea id="tools" name="tools" rows="4" placeholder="CRM, scheduling, email software, invoicing, spreadsheets, etc."></textarea>
+              </label>
+
+              <label>
+                What does a good customer experience look like for your business?
+                <textarea id="customerSummary" name="customerSummary" rows="4" placeholder="Fast, clear, trustworthy, consistent, easy to buy from, etc."></textarea>
+              </label>
+            </div>
+
+            <div class="actions-row">
+              <button type="submit" class="primary-btn">Generate business profile</button>
+              <button type="button" class="secondary-btn" id="cancel-form-btn">Back to home</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section id="dashboard" class="section hidden">
+        <div class="container dashboard-wrapper">
+          <div class="dashboard-header">
+            <div>
+              <p class="eyebrow">Current phase</p>
+              <h2 id="phase-title">Business phase</h2>
+            </div>
+            <button class="secondary-btn" id="edit-profile-btn">Edit profile</button>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card accent">
+              <span>Business health</span>
+              <strong id="health-score">0</strong>
+            </div>
+            <div class="stat-card">
+              <span>Primary risk</span>
+              <strong id="primary-risk">-</strong>
+            </div>
+            <div class="stat-card">
+              <span>Recommendation</span>
+              <strong id="phase-recommendation">-</strong>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="panel">
+              <h3>Business profile summary</h3>
+              <p id="profile-summary"></p>
+            </div>
+
+            <div class="panel">
+              <h3>Top risks</h3>
+              <ul id="risk-flags"></ul>
+            </div>
+
+            <div class="panel wide-panel">
+              <h3>Next best actions</h3>
+              <ul id="action-items"></ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
