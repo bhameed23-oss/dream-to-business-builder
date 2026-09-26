@@ -1,0 +1,289 @@
+const PHASES = {
+  creation: {
+    title: 'Creation',
+    description: 'You are building the foundation of the business and clarifying the offer, market, and early systems.'
+  },
+  operation: {
+    title: 'Operation',
+    description: 'You are running the business and need better systems, stability, and a less chaotic operating rhythm.'
+  },
+  auditing: {
+    title: 'Auditing',
+    description: 'You need to evaluate whether the business is structurally sound and identify weak points before growth.'
+  },
+  scaling: {
+    title: 'Scaling',
+    description: 'You are ready to grow, but need clearer ownership, systems, and risk management.'
+  },
+  compliance: {
+    title: 'Compliance Catch-Up',
+    description: 'You need to identify and address legal, privacy, and compliance gaps before they turn into serious risk.'
+  },
+  automation: {
+    title: 'Automation & Systems Upgrade',
+    description: 'You are improving workflows, reducing manual effort, and building the systems that support sustainable growth.'
+  },
+  exit: {
+    title: 'Exit Readiness',
+    description: 'You are preparing for transfer, sale, succession, or strategic transformation and need a clear readiness review.'
+  }
+};
+
+const getProfileFromForm = (formData) => {
+  const clarity = Number(formData.clarity || 3);
+  const operations = Number(formData.operations || 3);
+  const riskPosture = Number(formData.riskPosture || 3);
+  const automation = Number(formData.automation || 2);
+
+  const healthScore = Math.round((clarity + operations + riskPosture + automation) / 4 * 20);
+
+  const situation = formData.situation || 'new-business';
+  const phase = recommendPhase(situation, clarity, operations, riskPosture, automation);
+  const riskFlags = generateRiskFlags(phase, formData.mainRisk, formData.painPoints, formData.tools);
+  const actionItems = generateActionItems(phase, formData.goals, formData.painPoints, formData.tools);
+
+  const profile = {
+    id: `profile-${Date.now()}`,
+    businessName: formData.businessName || 'Untitled Business',
+    businessType: formData.businessType || 'service-business',
+    situation,
+    currentPhase: phase,
+    goals: formData.goals ? formData.goals.split(/\n|,/).map((item) => item.trim()).filter(Boolean) : ['Clarify direction', 'Improve operations'],
+    painPoints: formData.painPoints ? formData.painPoints.split(/\n|,/).map((item) => item.trim()).filter(Boolean) : ['Operational inconsistency'],
+    mainRisk: formData.mainRisk || 'Operational instability',
+    customerSummary: formData.customerSummary || 'The business needs a clearer and more reliable customer experience.',
+    toolSummary: formData.tools || 'Essential tools are being used, but process consistency is still developing.',
+    healthScore,
+    riskFlags,
+    actionItems,
+    primaryRisk: riskFlags[0] || 'Unclear operating rhythm',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  return profile;
+};
+
+const recommendPhase = (situation, clarity, operations, riskPosture, automation) => {
+  const weighted = {
+    creation: 0,
+    operation: 0,
+    auditing: 0,
+    scaling: 0,
+    compliance: 0,
+    automation: 0,
+    exit: 0
+  };
+
+  if (situation === 'new-business') weighted.creation += 4;
+  if (situation === 'improve-existing') weighted.operation += 3;
+  if (situation === 'grow-business') weighted.scaling += 4;
+  if (situation === 'fix-risk') weighted.compliance += 3;
+  if (situation === 'system-upgrade') weighted.automation += 4;
+  if (situation === 'prepare-exit') weighted.exit += 4;
+
+  if (operations <= 2) weighted.operation += 2;
+  if (clarity <= 2) weighted.creation += 1;
+  if (riskPosture <= 2) weighted.compliance += 2;
+  if (riskPosture >= 4 && operations >= 3) weighted.auditing += 2;
+  if (automation <= 2 && operations >= 3) weighted.automation += 2;
+  if (clarity >= 4 && operations >= 3) weighted.scaling += 2;
+
+  const phase = Object.entries(weighted).sort((a, b) => b[1] - a[1])[0][0];
+  return phase;
+};
+
+const generateRiskFlags = (phase, mainRisk, painPoints, tools) => {
+  const flags = [];
+
+  if (mainRisk) flags.push(mainRisk);
+  if (phase === 'scaling') flags.push('Growth is outpacing internal structure');
+  if (phase === 'compliance') flags.push('Legal, privacy, or risk reviews may be behind');
+  if (phase === 'automation') flags.push('Manual workflows are creating drag and inconsistency');
+  if (phase === 'operation') flags.push('Operating rhythm is not yet stable');
+  if (painPoints) flags.push(...painPoints.split(/\n|,/).map((item) => item.trim()).filter(Boolean).slice(0, 2));
+  if (tools) flags.push('Tool stack may need better integration or standardization');
+
+  return [...new Set(flags)].slice(0, 4);
+};
+
+const generateActionItems = (phase, goals, painPoints, tools) => {
+  const baseActions = {
+    creation: [
+      'Clarify the offer and the customer problem.',
+      'Create a simple service or delivery process.',
+      'Define the first version of a business profile and operating rhythm.'
+    ],
+    operation: [
+      'Document the repeatable operating system.',
+      'Improve customer follow-up and service consistency.',
+      'Review which tasks create drag or confusion.'
+    ],
+    auditing: [
+      'Review business processes for weak points and bottlenecks.',
+      'Assess what is working versus what is fragile.',
+      'Create a clear action list before scaling or major changes.'
+    ],
+    scaling: [
+      'Clarify what is essential before growth.',
+      'Document ownership and decision-making structure.',
+      'Build stronger systems before adding more volume.'
+    ],
+    compliance: [
+      'Review legal, privacy, customer data, and operational risk exposures.',
+      'Create a review plan for compliance gaps and sensitive areas.',
+      'Bring in professional review where policy or legal exposure is significant.'
+    ],
+    automation: [
+      'Identify repetitive manual work that should be standardized.',
+      'Map the biggest workflow bottlenecks.',
+      'Automate where it reduces risk and improves consistency.'
+    ],
+    exit: [
+      'Review business value, operation quality, and transfer readiness.',
+      'Assess financial, legal, and operational documentation gaps.',
+      'Prepare for a strong exit or succession process.'
+    ]
+  };
+
+  const result = [...baseActions[phase] || baseActions.operation];
+
+  if (goals) {
+    result.push(`Prioritize the goal: ${goals.split(/\n|,/)[0].trim() || 'clarify direction'}`);
+  }
+
+  if (painPoints) {
+    const firstPainPoint = painPoints.split(/\n|,/).map((item) => item.trim()).filter(Boolean)[0];
+    if (firstPainPoint) result.push(`Address the biggest issue: ${firstPainPoint}`);
+  }
+
+  if (tools) {
+    result.push('Review whether the current tool stack is actually supporting the workflow or adding friction.');
+  }
+
+  return [...new Set(result)].slice(0, 5);
+};
+
+const renderPhaseText = (phaseKey) => {
+  const phase = PHASES[phaseKey] || PHASES.operation;
+  return phase.title + ': ' + phase.description;
+};
+
+const renderProfile = (profile) => {
+  const dashboard = document.getElementById('dashboard');
+  const phaseTitle = document.getElementById('phase-title');
+  const healthScore = document.getElementById('health-score');
+  const primaryRisk = document.getElementById('primary-risk');
+  const recommendation = document.getElementById('phase-recommendation');
+  const profileSummary = document.getElementById('profile-summary');
+  const riskFlags = document.getElementById('risk-flags');
+  const actionItems = document.getElementById('action-items');
+
+  phaseTitle.textContent = PHASES[profile.currentPhase]?.title || 'Business phase';
+  healthScore.textContent = `${profile.healthScore}`;
+  primaryRisk.textContent = profile.primaryRisk;
+  recommendation.textContent = renderPhaseText(profile.currentPhase);
+
+  const summary = [
+    `${profile.businessName} is a ${profile.businessType.replace('-', ' ')} business.`,
+    `Current focus: ${profile.situation.replace('-', ' ')}.`,
+    `Customer expectation: ${profile.customerSummary}`
+  ].join(' ');
+
+  profileSummary.textContent = summary;
+
+  riskFlags.innerHTML = profile.riskFlags.map((item) => `<li>${item}</li>`).join('');
+  actionItems.innerHTML = profile.actionItems.map((item) => `<li>${item}</li>`).join('');
+
+  dashboard.classList.remove('hidden');
+  document.getElementById('intake').classList.add('hidden');
+};
+
+const saveProfile = (profile) => {
+  localStorage.setItem('dreamToBusinessBuilderProfile', JSON.stringify(profile));
+};
+
+const loadProfile = () => {
+  const profileString = localStorage.getItem('dreamToBusinessBuilderProfile');
+  if (!profileString) return null;
+
+  try {
+    const parsed = JSON.parse(profileString);
+    return parsed;
+  } catch (error) {
+    return null;
+  }
+};
+
+const handleFormSubmit = (event) => {
+  event.preventDefault();
+
+  const form = event.target;
+  const formData = Object.fromEntries(new FormData(form).entries());
+  const profile = getProfileFromForm(formData);
+
+  saveProfile(profile);
+  renderProfile(profile);
+};
+
+const bindRangeValues = () => {
+  const controls = [
+    { id: 'clarity', label: 'clarity-value' },
+    { id: 'operations', label: 'operations-value' },
+    { id: 'riskPosture', label: 'riskPosture-value' },
+    { id: 'automation', label: 'automation-value' }
+  ];
+
+  for (const control of controls) {
+    const input = document.getElementById(control.id);
+    const output = document.getElementById(control.label);
+    if (input && output) {
+      const sync = () => {
+        output.textContent = `${input.value} / 5`;
+      };
+      input.addEventListener('input', sync);
+      sync();
+    }
+  }
+};
+
+const bindActions = () => {
+  document.getElementById('start-review-btn')?.addEventListener('click', () => {
+    document.getElementById('intake').classList.remove('hidden');
+    document.getElementById('home').scrollIntoView({ behavior: 'smooth' });
+  });
+
+  document.getElementById('hero-start-btn')?.addEventListener('click', () => {
+    document.getElementById('intake').classList.remove('hidden');
+    document.getElementById('intake').scrollIntoView({ behavior: 'smooth' });
+  });
+
+  document.getElementById('learn-more-btn')?.addEventListener('click', () => {
+    document.getElementById('how-it-works').scrollIntoView({ behavior: 'smooth' });
+  });
+
+  document.getElementById('cancel-form-btn')?.addEventListener('click', () => {
+    document.getElementById('intake').classList.add('hidden');
+    document.getElementById('home').scrollIntoView({ behavior: 'smooth' });
+  });
+
+  document.getElementById('edit-profile-btn')?.addEventListener('click', () => {
+    document.getElementById('dashboard').classList.add('hidden');
+    document.getElementById('intake').classList.remove('hidden');
+    document.getElementById('intake').scrollIntoView({ behavior: 'smooth' });
+  });
+
+  document.getElementById('business-form')?.addEventListener('submit', handleFormSubmit);
+};
+
+const initialize = () => {
+  bindRangeValues();
+  bindActions();
+
+  const savedProfile = loadProfile();
+  if (savedProfile) {
+    renderProfile(savedProfile);
+  }
+};
+
+initialize();
