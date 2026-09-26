@@ -1,453 +1,331 @@
-* {
-  box-sizing: border-box;
-}
-
-:root {
-  --bg: #f4f7fb;
-  --panel: #ffffff;
-  --panel-soft: #eef3ff;
-  --text: #10213a;
-  --muted: #52657f;
-  --primary: #2a5cff;
-  --primary-dark: #1d44cf;
-  --accent: #14b8a6;
-  --warning: #f59e0b;
-  --danger: #d95050;
-  --border: #dfe7f2;
-  --shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  margin: 0;
-  font-family: Inter, Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-}
-
-button,
-input,
-textarea,
-select {
-  font: inherit;
-}
-
-button {
-  cursor: pointer;
-}
-
-.container {
-  width: min(1100px, calc(100% - 32px));
-  margin: 0 auto;
-}
-
-.topbar {
-  position: sticky;
-  top: 0;
-  background: rgba(244, 247, 251, 0.9);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-  z-index: 10;
-}
-
-.nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 18px 0;
-  gap: 16px;
-}
-
-.brand {
-  font-weight: 800;
-  font-size: 1.05rem;
-}
-
-nav {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-}
-
-nav a {
-  color: var(--muted);
-  text-decoration: none;
-  font-size: 0.95rem;
-}
-
-.primary-btn,
-.secondary-btn {
-  border-radius: 12px;
-  padding: 12px 18px;
-  font-weight: 700;
-  border: none;
-  transition: 0.2s ease;
-}
-
-.primary-btn {
-  background: var(--primary);
-  color: white;
-  box-shadow: var(--shadow);
-}
-
-.primary-btn:hover {
-  background: var(--primary-dark);
-}
-
-.secondary-btn {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text);
-}
-
-.hero {
-  padding: 72px 0 44px;
-}
-
-.hero-grid {
-  display: grid;
-  grid-template-columns: 1.5fr 0.9fr;
-  gap: 40px;
-  align-items: center;
-}
-
-.eyebrow {
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.74rem;
-  font-weight: 800;
-  color: var(--primary);
-  margin-bottom: 10px;
-}
-
-.hero h1 {
-  font-size: clamp(2.4rem, 4vw, 4.5rem);
-  line-height: 1.05;
-  margin: 0 0 16px;
-}
-
-.lede {
-  font-size: 1.08rem;
-  color: var(--muted);
-  line-height: 1.7;
-  max-width: 640px;
-}
-
-.cta-row {
-  margin-top: 22px;
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.hero-card,
-.panel,
-.step-card,
-.stat-card,
-.form-wrapper {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 22px;
-  box-shadow: var(--shadow);
-}
-
-.hero-card {
-  padding: 28px 24px;
-}
-
-.mini-label {
-  color: var(--muted);
-  font-size: 0.84rem;
-  margin-bottom: 18px;
-}
-
-.score-ring {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  margin: 12px auto 18px;
-  display: grid;
-  place-items: center;
-  background: conic-gradient(var(--accent) 0 72%, var(--panel-soft) 72% 100%);
-  position: relative;
-  font-size: 1.8rem;
-  font-weight: 800;
-  color: var(--text);
-}
-
-.score-ring::before {
-  content: "";
-  position: absolute;
-  inset: 12px;
-  background: white;
-  border-radius: 50%;
-}
-
-.score-ring {
-  line-height: 120px;
-}
-
-.score-ring::after {
-  content: "72";
-  position: relative;
-  z-index: 1;
-}
-
-.hero-card ul {
-  margin: 0;
-  padding-left: 18px;
-  color: var(--muted);
-  line-height: 1.9;
-}
-
-.section {
-  padding: 70px 0;
-}
-
-.alt-section {
-  background: linear-gradient(180deg, #eef4ff, #f8faff);
-}
-
-h2 {
-  font-size: clamp(2rem, 3vw, 2.7rem);
-  margin-bottom: 28px;
-}
-
-.steps-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 18px;
-}
-
-.step-card {
-  padding: 24px 18px;
-}
-
-.step-card span {
-  display: inline-grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
-  background: var(--panel-soft);
-  color: var(--primary);
-  font-weight: 800;
-  margin-bottom: 12px;
-}
-
-.step-card h3 {
-  margin: 0 0 8px;
-}
-
-.step-card p {
-  margin: 0;
-  color: var(--muted);
-  line-height: 1.7;
-}
-
-.phase-list {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(180px, 1fr));
-  gap: 14px;
-}
-
-.phase-list > div {
-  background: rgba(255, 255, 255, 0.75);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 16px 18px;
-  font-weight: 700;
-}
-
-.narrow {
-  max-width: 760px;
-}
-
-.form-section {
-  padding-top: 40px;
-}
-
-.form-wrapper {
-  padding: 28px;
-}
-
-.form-grid,
-.textarea-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-}
-
-label {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  color: var(--text);
-  font-weight: 600;
-}
-
-input,
-textarea,
-select {
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: white;
-  padding: 12px 14px;
-  color: var(--text);
-}
-
-textarea {
-  min-height: 110px;
-  resize: vertical;
-}
-
-input[type="range"] {
-  padding: 0;
-}
-
-.range-value {
-  color: var(--muted);
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-
-.actions-row {
-  display: flex;
-  justify-content: flex-start;
-  gap: 12px;
-  margin-top: 22px;
-}
-
-.hidden {
-  display: none !important;
-}
-
-.dashboard-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
-}
-
-.dashboard-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 14px;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.review-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(217, 80, 80, 0.1);
-  color: var(--danger);
-  border: 1px solid rgba(217, 80, 80, 0.18);
-  border-radius: 999px;
-  padding: 8px 12px;
-  font-size: 0.8rem;
-  font-weight: 700;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
-}
-
-.stat-card {
-  padding: 22px 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.stat-card span {
-  color: var(--muted);
-  font-size: 0.86rem;
-}
-
-.stat-card strong {
-  font-size: 1.8rem;
-}
-
-.accent {
-  background: linear-gradient(135deg, #ecfdf5, #eff6ff);
-}
-
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-}
-
-.panel {
-  padding: 22px 20px;
-}
-
-.panel h3 {
-  margin-top: 0;
-}
-
-.wide-panel {
-  grid-column: 1 / -1;
-}
-
-.phase-panel p {
-  color: var(--muted);
-  line-height: 1.7;
-  margin-bottom: 0;
-}
-
-ul {
-  margin: 0;
-  padding-left: 18px;
-  line-height: 1.9;
-}
-
-@media (max-width: 840px) {
-  .hero-grid,
-  .steps-grid,
-  .phase-list,
-  .stats-grid,
-  .dashboard-grid,
-  .form-grid,
-  .textarea-grid {
-    grid-template-columns: 1fr;
+const PHASES = {
+  creation: {
+    title: 'Creation',
+    description: 'You are building the foundation of the business and clarifying the offer, market, and early systems.',
+    guidance: 'Focus on clarifying the value proposition, defining the customer, and creating a simple delivery rhythm before adding more complexity.'
+  },
+  operation: {
+    title: 'Operation',
+    description: 'You are running the business and need better systems, stability, and a less chaotic operating rhythm.',
+    guidance: 'Document the core process, improve visibility, and reduce manual effort so the business becomes more reliable and easier to run.'
+  },
+  auditing: {
+    title: 'Auditing',
+    description: 'You need to evaluate whether the business is structurally sound and identify weak points before growth.',
+    guidance: 'Review the business as a system. Look for process gaps, ownership gaps, inconsistent handoffs, and decision bottlenecks before taking on more scale.'
+  },
+  scaling: {
+    title: 'Scaling',
+    description: 'You are ready to grow, but need clearer ownership, systems, and risk management.',
+    guidance: 'Before growing, tighten your process, define who owns what, and make sure your systems can handle more volume without extra chaos.'
+  },
+  compliance: {
+    title: 'Compliance Catch-Up',
+    description: 'You need to identify and address legal, privacy, and compliance gaps before they turn into serious risk.',
+    guidance: 'Review where customer data, obligations, or sensitive workflows are exposed. If compliance gaps are significant, bring in professional review.'
+  },
+  automation: {
+    title: 'Automation & Systems Upgrade',
+    description: 'You are improving workflows, reducing manual effort, and building the systems that support sustainable growth.',
+    guidance: 'Automate repeatable work only after you understand the workflow. The goal is consistency, visibility, and less operational drag.'
+  },
+  exit: {
+    title: 'Exit Readiness',
+    description: 'You are preparing for transfer, sale, succession, or strategic transformation and need a clear readiness review.',
+    guidance: 'Get the business into a clearer, more legible state. Review documentation, operations, key dependencies, and value-driving systems before a transition.'
+  }
+};
+
+const getProfileFromForm = (formData) => {
+  const clarity = Number(formData.clarity || 3);
+  const operations = Number(formData.operations || 3);
+  const riskPosture = Number(formData.riskPosture || 3);
+  const automation = Number(formData.automation || 2);
+
+  const healthScore = Math.min(100, Math.max(0, Math.round(((clarity + operations + riskPosture + automation) / 20) * 100 / 4)));
+
+  const situation = formData.situation || 'new-business';
+  const phase = recommendPhase(situation, clarity, operations, riskPosture, automation);
+  const riskFlags = generateRiskFlags(phase, formData.mainRisk, formData.painPoints, formData.tools);
+  const actionItems = generateActionItems(phase, formData.goals, formData.painPoints, formData.tools);
+  const reviewRecommended = shouldRecommendReview(phase, riskPosture, operations, healthScore);
+
+  const profile = {
+    id: `profile-${Date.now()}`,
+    businessName: formData.businessName || 'Untitled Business',
+    businessType: formData.businessType || 'service-business',
+    situation,
+    currentPhase: phase,
+    goals: splitField(formData.goals, ['Clarify direction', 'Improve operations']),
+    painPoints: splitField(formData.painPoints, ['Operational inconsistency']),
+    mainRisk: formData.mainRisk || 'Operational instability',
+    customerSummary: formData.customerSummary || 'The business needs a clearer and more reliable customer experience.',
+    toolSummary: formData.tools || 'Essential tools are being used, but process consistency is still developing.',
+    healthScore,
+    riskFlags,
+    actionItems,
+    primaryRisk: riskFlags[0] || 'Unclear operating rhythm',
+    reviewRecommended,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  return profile;
+};
+
+const splitField = (value, fallback) => {
+  if (!value) return fallback;
+  return value
+    .split(/\n|,/) 
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .slice(0, 4) || fallback;
+};
+
+const shouldRecommendReview = (phase, riskPosture, operations, healthScore) => {
+  if (phase === 'compliance') return true;
+  if (phase === 'exit') return true;
+  if (riskPosture <= 2) return true;
+  if (operations <= 2 && healthScore < 60) return true;
+  return false;
+};
+
+const recommendPhase = (situation, clarity, operations, riskPosture, automation) => {
+  const weighted = {
+    creation: 0,
+    operation: 0,
+    auditing: 0,
+    scaling: 0,
+    compliance: 0,
+    automation: 0,
+    exit: 0
+  };
+
+  if (situation === 'new-business') weighted.creation += 4;
+  if (situation === 'improve-existing') weighted.operation += 3;
+  if (situation === 'grow-business') weighted.scaling += 4;
+  if (situation === 'fix-risk') weighted.compliance += 3;
+  if (situation === 'system-upgrade') weighted.automation += 4;
+  if (situation === 'prepare-exit') weighted.exit += 4;
+
+  if (operations <= 2) weighted.operation += 2;
+  if (clarity <= 2) weighted.creation += 1;
+  if (riskPosture <= 2) weighted.compliance += 2;
+  if (riskPosture >= 4 && operations >= 3) weighted.auditing += 2;
+  if (automation <= 2 && operations >= 3) weighted.automation += 2;
+  if (clarity >= 4 && operations >= 3) weighted.scaling += 2;
+
+  const phase = Object.entries(weighted).sort((a, b) => b[1] - a[1])[0][0];
+  return phase;
+};
+
+const generateRiskFlags = (phase, mainRisk, painPoints, tools) => {
+  const flags = [];
+
+  if (mainRisk) flags.push(mainRisk);
+  if (phase === 'scaling') flags.push('Growth is outpacing internal structure');
+  if (phase === 'compliance') flags.push('Legal, privacy, or risk reviews may be behind');
+  if (phase === 'automation') flags.push('Manual workflows are creating drag and inconsistency');
+  if (phase === 'operation') flags.push('Operating rhythm is not yet stable');
+  if (painPoints) flags.push(...splitField(painPoints, []).slice(0, 2));
+  if (tools) flags.push('Tool stack may need better integration or standardization');
+
+  return [...new Set(flags)].slice(0, 4);
+};
+
+const generateActionItems = (phase, goals, painPoints, tools) => {
+  const baseActions = {
+    creation: [
+      'Clarify the offer and the customer problem.',
+      'Create a simple service or delivery process.',
+      'Define the first version of a business profile and operating rhythm.'
+    ],
+    operation: [
+      'Document the repeatable operating system.',
+      'Improve customer follow-up and service consistency.',
+      'Review which tasks create drag or confusion.'
+    ],
+    auditing: [
+      'Review business processes for weak points and bottlenecks.',
+      'Assess what is working versus what is fragile.',
+      'Create a clear action list before scaling or major changes.'
+    ],
+    scaling: [
+      'Clarify what is essential before growth.',
+      'Document ownership and decision-making structure.',
+      'Build stronger systems before adding more volume.'
+    ],
+    compliance: [
+      'Review legal, privacy, customer data, and operational risk exposures.',
+      'Create a review plan for compliance gaps and sensitive areas.',
+      'Bring in professional review where policy or legal exposure is significant.'
+    ],
+    automation: [
+      'Identify repetitive manual work that should be standardized.',
+      'Map the biggest workflow bottlenecks.',
+      'Automate where it reduces risk and improves consistency.'
+    ],
+    exit: [
+      'Review business value, operation quality, and transfer readiness.',
+      'Assess financial, legal, and operational documentation gaps.',
+      'Prepare for a strong exit or succession process.'
+    ]
+  };
+
+  const result = [...baseActions[phase] || baseActions.operation];
+
+  const parsedGoals = splitField(goals, []);
+  if (parsedGoals.length) {
+    result.push(`Prioritize the goal: ${parsedGoals[0]}`);
   }
 
-  .nav {
-    flex-wrap: wrap;
+  const parsedPainPoints = splitField(painPoints, []);
+  if (parsedPainPoints.length) {
+    result.push(`Address the biggest issue: ${parsedPainPoints[0]}`);
   }
 
-  nav {
-    width: 100%;
-    justify-content: space-between;
-  }
-}
-
-@media (max-width: 560px) {
-  .nav {
-    justify-content: center;
+  if (tools) {
+    result.push('Review whether the current tool stack is actually supporting the workflow or adding friction.');
   }
 
-  .topbar {
-    padding-bottom: 6px;
+  return [...new Set(result)].slice(0, 5);
+};
+
+const renderPhaseText = (phaseKey) => {
+  const phase = PHASES[phaseKey] || PHASES.operation;
+  return phase.title + ': ' + phase.description;
+};
+
+const renderPhaseDetail = (phaseKey) => {
+  const phase = PHASES[phaseKey] || PHASES.operation;
+  return phase.guidance;
+};
+
+const renderProfile = (profile) => {
+  const dashboard = document.getElementById('dashboard');
+  const phaseTitle = document.getElementById('phase-title');
+  const healthScore = document.getElementById('health-score');
+  const primaryRisk = document.getElementById('primary-risk');
+  const recommendation = document.getElementById('phase-recommendation');
+  const profileSummary = document.getElementById('profile-summary');
+  const riskFlags = document.getElementById('risk-flags');
+  const actionItems = document.getElementById('action-items');
+  const phaseDetail = document.getElementById('phase-detail');
+  const reviewBadge = document.getElementById('review-badge');
+
+  phaseTitle.textContent = PHASES[profile.currentPhase]?.title || 'Business phase';
+  healthScore.textContent = `${profile.healthScore}`;
+  primaryRisk.textContent = profile.primaryRisk;
+  recommendation.textContent = renderPhaseText(profile.currentPhase);
+  phaseDetail.textContent = renderPhaseDetail(profile.currentPhase);
+
+  const summary = [
+    `${profile.businessName} is a ${profile.businessType.replace('-', ' ')} business.`,
+    `Current focus: ${profile.situation.replace('-', ' ')}.`,
+    `Customer expectation: ${profile.customerSummary}`
+  ].join(' ');
+
+  profileSummary.textContent = summary;
+  riskFlags.innerHTML = profile.riskFlags.map((item) => `<li>${item}</li>`).join('');
+  actionItems.innerHTML = profile.actionItems.map((item) => `<li>${item}</li>`).join('');
+
+  if (profile.reviewRecommended) {
+    reviewBadge.textContent = 'Professional review recommended';
+    reviewBadge.style.display = 'inline-flex';
+  } else {
+    reviewBadge.textContent = 'Review recommended';
+    reviewBadge.style.display = 'inline-flex';
   }
 
-  .cta-row,
-  .actions-row,
-  .dashboard-header,
-  .header-actions {
-    flex-direction: column;
-    align-items: stretch;
+  dashboard.classList.remove('hidden');
+  document.getElementById('intake').classList.add('hidden');
+};
+
+const saveProfile = (profile) => {
+  localStorage.setItem('dreamToBusinessBuilderProfile', JSON.stringify(profile));
+};
+
+const loadProfile = () => {
+  const profileString = localStorage.getItem('dreamToBusinessBuilderProfile');
+  if (!profileString) return null;
+
+  try {
+    const parsed = JSON.parse(profileString);
+    return parsed;
+  } catch (error) {
+    return null;
   }
-}
+};
+
+const handleFormSubmit = (event) => {
+  event.preventDefault();
+
+  const form = event.target;
+  const formData = Object.fromEntries(new FormData(form).entries());
+  const profile = getProfileFromForm(formData);
+
+  saveProfile(profile);
+  renderProfile(profile);
+};
+
+const bindRangeValues = () => {
+  const controls = [
+    { id: 'clarity', label: 'clarity-value' },
+    { id: 'operations', label: 'operations-value' },
+    { id: 'riskPosture', label: 'riskPosture-value' },
+    { id: 'automation', label: 'automation-value' }
+  ];
+
+  for (const control of controls) {
+    const input = document.getElementById(control.id);
+    const output = document.getElementById(control.label);
+    if (input && output) {
+      const sync = () => {
+        output.textContent = `${input.value} / 5`;
+      };
+      input.addEventListener('input', sync);
+      sync();
+    }
+  }
+};
+
+const bindActions = () => {
+  document.getElementById('start-review-btn')?.addEventListener('click', () => {
+    document.getElementById('intake').classList.remove('hidden');
+    document.getElementById('home').scrollIntoView({ behavior: 'smooth' });
+  });
+
+  document.getElementById('hero-start-btn')?.addEventListener('click', () => {
+    document.getElementById('intake').classList.remove('hidden');
+    document.getElementById('intake').scrollIntoView({ behavior: 'smooth' });
+  });
+
+  document.getElementById('learn-more-btn')?.addEventListener('click', () => {
+    document.getElementById('how-it-works').scrollIntoView({ behavior: 'smooth' });
+  });
+
+  document.getElementById('cancel-form-btn')?.addEventListener('click', () => {
+    document.getElementById('intake').classList.add('hidden');
+    document.getElementById('home').scrollIntoView({ behavior: 'smooth' });
+  });
+
+  document.getElementById('edit-profile-btn')?.addEventListener('click', () => {
+    document.getElementById('dashboard').classList.add('hidden');
+    document.getElementById('intake').classList.remove('hidden');
+    document.getElementById('intake').scrollIntoView({ behavior: 'smooth' });
+  });
+
+  document.getElementById('business-form')?.addEventListener('submit', handleFormSubmit);
+};
+
+const initialize = () => {
+  bindRangeValues();
+  bindActions();
+
+  const savedProfile = loadProfile();
+  if (savedProfile) {
+    renderProfile(savedProfile);
+  }
+};
+
+initialize();
