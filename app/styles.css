@@ -37,6 +37,7 @@
           <div class="hero-card">
             <div class="mini-label">Current business health</div>
             <div class="score-ring">72</div>
+            <div id="health-status" class="health-status">Healthy</div>
             <ul>
               <li>Clearer business direction</li>
               <li>Risk-aware next steps</li>
@@ -208,7 +209,8 @@
           <div class="stats-grid">
             <div class="stat-card accent">
               <span>Business health</span>
-              <strong id="health-score">0</strong>
+              <strong id="health-score">0/100</strong>
+              <span id="health-status" class="health-status-inline">Healthy</span>
             </div>
             <div class="stat-card">
               <span>Primary risk</span>

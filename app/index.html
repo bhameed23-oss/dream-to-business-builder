@@ -191,6 +191,13 @@ const generateActionItems = (phase, goals, painPoints, tools) => {
   return [...new Set(result)].slice(0, 5);
 };
 
+const getHealthBand = (score) => {
+  if (score >= 80) return 'Strong';
+  if (score >= 60) return 'Healthy';
+  if (score >= 40) return 'Watchlist';
+  return 'Critical';
+};
+
 const renderPhaseText = (phaseKey) => {
   const phase = PHASES[phaseKey] || PHASES.operation;
   return phase.title + ': ' + phase.description;
@@ -199,6 +206,17 @@ const renderPhaseText = (phaseKey) => {
 const renderPhaseDetail = (phaseKey) => {
   const phase = PHASES[phaseKey] || PHASES.operation;
   return phase.guidance;
+};
+
+const updateScoreRing = (score) => {
+  const ring = document.querySelector('.score-ring');
+  if (!ring) return;
+
+  const clamped = Math.max(0, Math.min(100, score));
+  const color = clamped >= 80 ? 'var(--accent)' : clamped >= 60 ? '#3b82f6' : clamped >= 40 ? 'var(--warning)' : 'var(--danger)';
+  ring.style.background = `conic-gradient(${color} 0 ${clamped}%, var(--panel-soft) ${clamped}% 100%)`;
+  ring.setAttribute('data-score', `${clamped}`);
+  ring.style.setProperty('--score', `${clamped}`);
 };
 
 const renderProfile = (profile) => {
@@ -212,12 +230,20 @@ const renderProfile = (profile) => {
   const actionItems = document.getElementById('action-items');
   const phaseDetail = document.getElementById('phase-detail');
   const reviewBadge = document.getElementById('review-badge');
+  const healthStatus = document.getElementById('health-status');
 
   phaseTitle.textContent = PHASES[profile.currentPhase]?.title || 'Business phase';
-  healthScore.textContent = `${profile.healthScore}`;
+  const scoreValue = Number(profile.healthScore || 0);
+  healthScore.textContent = `${scoreValue}/100`;
   primaryRisk.textContent = profile.primaryRisk;
   recommendation.textContent = renderPhaseText(profile.currentPhase);
   phaseDetail.textContent = renderPhaseDetail(profile.currentPhase);
+
+  if (healthStatus) {
+    healthStatus.textContent = getHealthBand(scoreValue);
+  }
+
+  updateScoreRing(scoreValue);
 
   const summary = [
     `${profile.businessName} is a ${profile.businessType.replace('-', ' ')} business.`,
@@ -321,6 +347,7 @@ const bindActions = () => {
 const initialize = () => {
   bindRangeValues();
   bindActions();
+  updateScoreRing(72);
 
   const savedProfile = loadProfile();
   if (savedProfile) {
