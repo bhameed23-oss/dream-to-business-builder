@@ -1,35 +1,53 @@
 # Professional Review Package
 
-This module is designed to make it easier for professionals to review a business system quickly.
+This file is a clearer, easier-to-share review package for professionals who need to evaluate a business or system.
+
+## Package structure
+
+### 1. One-page business summary
+- business name
+- business type
+- customer type
+- offer
+- operating region
+- business stage
+
+### 2. Core business process summary
+- customer journey
+- lead process
+- booking or sales flow
+- service or delivery flow
+- follow-up process
+
+### 3. Risk summary
+- data collected
+- customer or employee information
+- payment handling
+- communications
+- sensitive documents
+- risks and concerns
+
+### 4. Security summary
+- where data is stored
+- authentication setup
+- access control
+- backup plan
+- encryption status
+- external tool usage
+
+### 5. Compliance and legal review items
+- privacy policy needs
+- terms and conditions needs
+- consent and disclosure requirements
+- jurisdiction-specific obligations
+- review triggers
+
+### 6. Recommended next steps
+- what is already in place
+- what is missing
+- what requires a professional review
+- what can be done immediately
 
 ## Why this matters
 
-A founder often needs a professional review but does not know what to provide. This package makes it simple to gather the right information in a structured format.
-
-## Core sections
-
-- business summary
-- customer summary
-- data handling summary
-- process summary
-- automation summary
-- risk summary
-- security summary
-- current gaps and next steps
-- what is already in place
-- what still needs review
-
-## Suggested output format
-
-1. quick summary
-2. business overview
-3. customer overview
-4. data and privacy overview
-5. systems and tools in use
-6. major risks
-7. proposed plan
-8. review recommendation
-
-## Use case
-
-This makes it easier for lawyers, security specialists, compliance reviewers, and consultants to review a business in a way that is clearer, faster, and more useful for both sides.
+This package makes it easier for a professional to evaluate risk fast, which reduces cost and confusion for a founder.
