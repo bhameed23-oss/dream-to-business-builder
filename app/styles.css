@@ -199,7 +199,10 @@
               <p class="eyebrow">Current phase</p>
               <h2 id="phase-title">Business phase</h2>
             </div>
-            <button class="secondary-btn" id="edit-profile-btn">Edit profile</button>
+            <div class="header-actions">
+              <span id="review-badge" class="review-badge">Review recommended</span>
+              <button class="secondary-btn" id="edit-profile-btn">Edit profile</button>
+            </div>
           </div>
 
           <div class="stats-grid">
@@ -231,6 +234,11 @@
             <div class="panel wide-panel">
               <h3>Next best actions</h3>
               <ul id="action-items"></ul>
+            </div>
+
+            <div class="panel wide-panel phase-panel">
+              <h3>Phase guidance</h3>
+              <p id="phase-detail"></p>
             </div>
           </div>
         </div>
