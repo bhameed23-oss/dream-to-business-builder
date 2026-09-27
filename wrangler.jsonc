@@ -1,0 +1,29 @@
+{
+	// This file tells Cloudflare's deployment tool ("Wrangler") how to publish
+	// this project as a Cloudflare Worker with Static Assets. This is the
+	// current, Cloudflare-recommended way to host a static site (the older
+	// "Cloudflare Pages" product still works, but new features and
+	// optimizations are focused on Workers now).
+	//
+	// This project has NO server-side code — it's a plain HTML/CSS/JS app
+	// that runs entirely in the visitor's browser. So there is no "main"
+	// entry point here, just a folder of files to serve.
+
+	// The name that will show up in the Cloudflare dashboard for this Worker,
+	// and that forms part of the free *.workers.dev preview URL
+	// (dream-to-business-builder.<your-subdomain>.workers.dev).
+	"name": "dream-to-business-builder",
+
+	// Cloudflare asks every Worker to "pin" a date so that future platform
+	// changes don't silently change how your site behaves. Using today's
+	// date when this file is created is the standard practice.
+	"compatibility_date": "2026-09-27",
+
+	// This tells Cloudflare: "serve every file in this folder directly to
+	// visitors." Since index.html lives at the repository root and links to
+	// app/styles.css and app/app.js with relative paths, the root of the
+	// repo ("./") is the correct folder to serve.
+	"assets": {
+		"directory": "./"
+	}
+}

@@ -1,0 +1,34 @@
+# Files and folders listed here are NOT uploaded when this site is deployed
+# to Cloudflare. They're planning/reference material in the GitHub repo, not
+# part of the actual live app (which is just index.html + the app/ folder).
+# Keeping these out makes deploys faster and keeps the live site limited to
+# only the files it actually needs.
+
+.git
+.github
+node_modules
+wrangler.jsonc
+.assetsignore
+
+# Planning and documentation folders — useful in the repo, not part of the
+# live site itself.
+community/
+design/
+examples/
+framework/
+integration/
+legal/
+product/
+security/
+tests/
+website/
+business-packs/
+
+# Root-level documentation files
+CONTRIBUTING.md
+QA_MANUAL.md
+TEST_PLAN.md
+PROJECT-OVERVIEW.md
+START-HERE.md
+README.md
+LICENSE
