@@ -1,0 +1,22 @@
+# Cloudflare Workers static-assets headers file.
+# https://developers.cloudflare.com/workers/static-assets/headers/
+#
+# What this is for: found during a security review (2026-09-27, using the
+# "ai-app-pitfall-check" scan built from Matt Murphy / The Faction Group's
+# public research on common AI-built-app security gaps — see P30 in that
+# checklist, "no security headers / CSP"). This app has no server, no
+# database, and no login, so almost none of that checklist applies — but a
+# static site should still tell the browser what it's allowed to load and
+# how to treat it. These headers do that.
+#
+# Why each one is safe to set this strictly: this app loads only its own
+# local styles.css and app.js (no external scripts, fonts, or trackers), has
+# no inline <script> or <style> blocks or onclick="" handlers (everything is
+# wired up with addEventListener in app.js), and its only image is the
+# favicon, which is a data: URI rather than a separate file.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'none'; form-action 'self'
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: no-referrer
+  Permissions-Policy: geolocation=(), camera=(), microphone=()
