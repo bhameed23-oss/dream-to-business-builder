@@ -1,57 +1,31 @@
-# Dream to Business Builder MVP
+# Dream to Business Builder
 
-This project is a working MVP for a business lifecycle review app that helps founders and small business owners understand their current business phase, surface major risks, and identify the next most important actions.
+A practical business lifecycle review tool for founders and small business owners. It helps users identify their current business phase, understand their biggest risks, and get a clear action plan.
 
-## Project purpose
+## What it does
 
 The app helps a user:
-- choose their business situation
-- answer a short intake
-- generate a business profile
 - determine their current lifecycle phase
-- view a business health score
-- review key risks and next actions
-- return later to update the same profile
+- review a health score
+- identify the primary business risk
+- understand which actions matter most next
+- decide when to bring in professional review
+- save and revisit their business profile
 
-## Current status
+## Categories in the tool
 
-The core MVP is implemented in the browser with:
-- homepage and hero section
-- onboarding questionnaire
-- business profile generation logic
-- phase recommendation engine
-- health score and risk summary
-- action items based on business state
-- persistence using localStorage
+The app evaluates the business across these lifecycle phases:
+- Creation
+- Operation
+- Auditing
+- Scaling
+- Compliance Catch-Up
+- Automation & Systems Upgrade
+- Exit Readiness
 
-## MVP structure
+## Quick start
 
-```text
-/
-├── app/
-│   ├── index.html
-│   ├── app.js
-│   └── styles.css
-├── README.md
-├── product/
-│   ├── mvp-product-spec.md
-│   ├── mvp-implementation-plan.md
-│   ├── business-profile-schema.md
-│   ├── app-structure.md
-│   └── onboarding-questions.md
-├── website/
-│   ├── homepage-wireframe.md
-│   ├── landing-page-blueprint.md
-│   └── final-product-narrative.md
-└── framework/
-    └── final-lifecycle-experience-summary.md
-```
-
-## How to run
-
-Open `app/index.html` in a browser, or serve the folder with a simple local web server.
-
-Example:
+Open the app locally with a static server:
 
 ```bash
 cd dream-to-business-builder
@@ -61,27 +35,59 @@ python -m http.server 8000
 Then open:
 
 ```text
-http://localhost:8000/app/
+http://localhost:8000/
 ```
 
-## MVP value proposition
+## App structure
 
-The product gives people a practical way to answer a simple question:
+```text
+/
+├── app/
+│   ├── app.js
+│   ├── index.html
+│   └── styles.css
+├── .github/
+│   └── workflows/
+│       └── deploy.yml
+├── tests/
+│   └── test.js
+├── README.md
+├── TEST_PLAN.md
+├── index.html
+└── LICENSE
+```
 
-What phase is my business in right now, what is the main risk, and what should I do next?
+## How the recommendation logic works
 
-This is the foundation for a broader lifecycle system that can later grow into deeper guidance, more advanced scoring, and workflow integration.
+The phase recommendation uses:
+- the selected business situation
+- clarity of direction
+- operational stability
+- risk posture
+- automation maturity
+- growth or transition signals
 
-## Future roadmap
+The health score is derived from these factors and is used to determine the recommended focus and review needs.
 
-Planned next steps:
-- improve UI polish and product copy
-- add stronger phase detail screens
-- add more realistic lifecycle logic and scoring
-- support editing and resetting the saved profile
-- add sample business profiles
-- add deeper privacy, compliance, and automation modules
+## Quality assurance
+
+The project includes a lightweight test harness to validate:
+- phase recommendation logic
+- health score ranges
+- review recommendation rules
+- realistic edge cases and fallback behavior
+
+See [TEST_PLAN.md](TEST_PLAN.md) for the full QA checklist.
+
+## Deployment
+
+The repository contains a GitHub Pages workflow for static deployment.
+
+- workflow: `.github/workflows/deploy.yml`
+- static root entry: `index.html`
+
+Push to `main` and GitHub Pages will publish the app.
 
 ## Notes
 
-This is an MVP and should be treated as a product foundation rather than a final production app.
+This MVP is designed to be useful, practical, and easy to evaluate before expanding into more advanced workflow or market-specific features.
