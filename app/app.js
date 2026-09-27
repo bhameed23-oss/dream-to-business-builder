@@ -36,6 +36,50 @@ const PHASES = {
   }
 };
 
+// ---------------------------------------------------------------------------
+// NEXT STEPS / BUSINESS PACK LINKING
+// ---------------------------------------------------------------------------
+// Every phase key above (creation, operation, auditing, etc.) has a matching
+// folder inside /framework/business-lifecycle/ in this same GitHub repo.
+// Each of those folders holds three files:
+//   - README.md      -> the "why this phase matters" explanation
+//   - checklist.md    -> a step-by-step, actionable to-do list for the phase
+//   - resources.md    -> real, free external resources (SBA, SCORE, FTC, etc.)
+//
+// This section builds the links from a phase key to those three files so the
+// dashboard can show the user exactly where to go next, instead of just
+// telling them the phase name and leaving them to figure out the rest.
+// ---------------------------------------------------------------------------
+
+// Maps each internal phase key to its folder name on GitHub.
+const PHASE_FOLDERS = {
+  creation: '01-creation',
+  operation: '02-operation',
+  auditing: '03-auditing',
+  scaling: '04-scaling',
+  compliance: '05-compliance-catch-up',
+  automation: '06-automation-and-systems-upgrade',
+  exit: '07-exit-readiness'
+};
+
+// Base URL for viewing files in this repo on GitHub (renders Markdown nicely,
+// unlike a raw.githubusercontent.com link which shows plain text).
+const REPO_BLOB_BASE = 'https://github.com/bhameed23-oss/dream-to-business-builder/blob/main/framework/business-lifecycle';
+
+// Given a phase key (e.g. "operation"), returns an object with direct links
+// to that phase's overview, checklist, and resources page.
+// If the phase key is unknown, this falls back to the "operation" phase so
+// the dashboard never ends up with a broken/empty link.
+const getPhaseLinks = (phaseKey) => {
+  const folder = PHASE_FOLDERS[phaseKey] || PHASE_FOLDERS.operation;
+  const base = `${REPO_BLOB_BASE}/${folder}`;
+  return {
+    overview: `${base}/README.md`,
+    checklist: `${base}/checklist.md`,
+    resources: `${base}/resources.md`
+  };
+};
+
 const getProfileFromForm = (formData) => {
   const clarity = Number(formData.clarity || 3);
   const operations = Number(formData.operations || 3);
@@ -261,6 +305,32 @@ const renderProfile = (profile) => {
 
   reviewBadge.textContent = profile.reviewRecommended ? 'Professional review recommended' : 'Review recommended';
   reviewBadge.dataset.level = profile.reviewRecommended ? 'critical' : 'watch';
+
+  // --- Next Steps panel -----------------------------------------------
+  // This is the part that turns a phase NAME into something the user can
+  // actually act on. It points to the real checklist and resources file
+  // for whatever phase they landed in, instead of leaving them to guess
+  // what to do with the recommendation.
+  const nextStepsPanel = document.getElementById('next-steps-panel');
+  if (nextStepsPanel) {
+    const phaseInfo = PHASES[profile.currentPhase] || PHASES.operation;
+    const links = getPhaseLinks(profile.currentPhase);
+
+    const checklistLink = document.getElementById('next-steps-checklist-link');
+    const resourcesLink = document.getElementById('next-steps-resources-link');
+    const overviewLink = document.getElementById('next-steps-overview-link');
+    const summaryText = document.getElementById('next-steps-summary');
+
+    if (summaryText) {
+      summaryText.textContent = `${phaseInfo.title} focus: ${phaseInfo.guidance}`;
+    }
+    if (checklistLink) checklistLink.href = links.checklist;
+    if (resourcesLink) resourcesLink.href = links.resources;
+    if (overviewLink) overviewLink.href = links.overview;
+
+    nextStepsPanel.classList.remove('hidden');
+  }
+
   dashboard.classList.remove('hidden');
   document.getElementById('intake').classList.add('hidden');
 };
