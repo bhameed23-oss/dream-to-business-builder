@@ -351,6 +351,88 @@ const loadProfile = () => {
   }
 };
 
+// ---------------------------------------------------------------------------
+// DOWNLOAD SUMMARY (the "exportable summary" feature)
+// ---------------------------------------------------------------------------
+// Turns a saved profile object into a plain-text report the user can save,
+// print, or send to someone else (an advisor, a business partner, an
+// accountant). Everything here runs in the browser — no server, no data
+// leaves the user's machine.
+// ---------------------------------------------------------------------------
+
+// Formats a value like "new-business" into "new business" for readability.
+const humanize = (value) => (value || '').toString().replace(/-/g, ' ');
+
+// Builds the full text report from a saved profile. Kept as its own function
+// (separate from the click handler below) so it's easy to test or reuse.
+const buildProfileSummaryText = (profile) => {
+  const phaseInfo = PHASES[profile.currentPhase] || PHASES.operation;
+  const links = getPhaseLinks(profile.currentPhase);
+  const generatedOn = new Date().toLocaleDateString(undefined, {
+    year: 'numeric', month: 'long', day: 'numeric'
+  });
+
+  const lines = [
+    'Dream to Business Builder — Business Profile Summary',
+    `Generated: ${generatedOn}`,
+    '',
+    `Business: ${profile.businessName || 'Untitled Business'}`,
+    `Type: ${humanize(profile.businessType)}`,
+    `Situation: ${humanize(profile.situation)}`,
+    '',
+    `Current Phase: ${phaseInfo.title}`,
+    `${phaseInfo.description}`,
+    '',
+    `Business Health Score: ${profile.healthScore}/100 (${getHealthBand(profile.healthScore)})`,
+    `Primary Risk: ${profile.primaryRisk}`,
+    `Professional Review: ${profile.reviewRecommended ? 'Recommended' : 'Not urgently needed right now'}`,
+    ''
+  ];
+
+  lines.push('Top Risks:');
+  (profile.riskFlags || []).forEach((item) => lines.push(`  - ${item}`));
+  lines.push('');
+
+  lines.push('Recommended Next Actions:');
+  (profile.actionItems || []).forEach((item) => lines.push(`  - ${item}`));
+  lines.push('');
+
+  lines.push('Continue working on this phase:');
+  lines.push(`  Checklist:  ${links.checklist}`);
+  lines.push(`  Resources:  ${links.resources}`);
+  lines.push(`  Full guide: ${links.overview}`);
+  lines.push('');
+  lines.push('This summary is a starting point for planning, not professional legal,');
+  lines.push('financial, or compliance advice.');
+
+  return lines.join('\n');
+};
+
+// Triggers an actual file download in the browser. Uses a Blob + temporary
+// <a> tag, which is the standard way to save a generated file client-side
+// without needing a server to produce it.
+const downloadProfileSummary = (profile) => {
+  const text = buildProfileSummaryText(profile);
+  const blob = new Blob([text], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+
+  const safeName = (profile.businessName || 'business')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+  const dateStamp = new Date().toISOString().slice(0, 10);
+
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `profile-${safeName}-${dateStamp}.txt`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  // Free the memory the browser set aside for the download link.
+  URL.revokeObjectURL(url);
+};
+
 const handleFormSubmit = (event) => {
   event.preventDefault();
 
@@ -407,6 +489,11 @@ const bindActions = () => {
     document.getElementById('dashboard').classList.add('hidden');
     document.getElementById('intake').classList.remove('hidden');
     document.getElementById('intake').scrollIntoView({ behavior: 'smooth' });
+  });
+
+  document.getElementById('export-profile-btn')?.addEventListener('click', () => {
+    const profile = loadProfile();
+    if (profile) downloadProfileSummary(profile);
   });
 
   document.getElementById('business-form')?.addEventListener('submit', handleFormSubmit);
