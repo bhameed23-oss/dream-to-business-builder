@@ -80,20 +80,42 @@ const getPhaseLinks = (phaseKey) => {
   };
 };
 
+// ---------------------------------------------------------------------------
+// HEALTH SCORE — how it's calculated (plain-language explanation)
+// ---------------------------------------------------------------------------
+// The form asks 7 simple questions, each answered on a 1-to-5 slider:
+//   1. clarity              - how clear is your business direction?
+//   2. operations           - how stable are your day-to-day operations?
+//   3. riskPosture          - how strong is your risk/compliance posture?
+//   4. automation           - how mature are your systems/automation?
+//   5. customerExperience   - how well are you treating your customers?
+//   6. growthReadiness      - how ready are you to get bigger?
+//   7. exitReadiness        - how easy would it be to sell or hand off today?
+//
+// To keep the math easy to explain to anyone (no advanced weighting formula
+// to justify), the health score is simply the average of all 7 answers,
+// turned into a score out of 100. Every question counts the same amount.
+// Example: if someone answers "3" on every question, that's 21 out of a
+// possible 35 points, which becomes 60 out of 100.
+// ---------------------------------------------------------------------------
 const getProfileFromForm = (formData) => {
   const clarity = Number(formData.clarity || 3);
   const operations = Number(formData.operations || 3);
   const riskPosture = Number(formData.riskPosture || 3);
   const automation = Number(formData.automation || 2);
+  const customerExperience = Number(formData.customerExperience || 3);
+  const growthReadiness = Number(formData.growthReadiness || 3);
+  const exitReadiness = Number(formData.exitReadiness || 3);
 
-  const weightedHealth = (clarity * 0.3) + (operations * 0.35) + (riskPosture * 0.2) + (automation * 0.15);
-  const healthScore = Math.min(100, Math.max(0, Math.round((weightedHealth / 5) * 100)));
+  const totalPoints = clarity + operations + riskPosture + automation + customerExperience + growthReadiness + exitReadiness;
+  const maxPossiblePoints = 5 * 7; // 7 questions, each worth up to 5 points
+  const healthScore = Math.min(100, Math.max(0, Math.round((totalPoints / maxPossiblePoints) * 100)));
 
   const situation = formData.situation || 'new-business';
-  const phase = recommendPhase(situation, clarity, operations, riskPosture, automation);
-  const riskFlags = generateRiskFlags(phase, formData.mainRisk, formData.painPoints, formData.tools);
-  const actionItems = generateActionItems(phase, formData.goals, formData.painPoints, formData.tools);
-  const reviewRecommended = shouldRecommendReview(phase, riskPosture, operations, healthScore);
+  const phase = recommendPhase(situation, clarity, operations, riskPosture, automation, customerExperience, growthReadiness, exitReadiness);
+  const riskFlags = generateRiskFlags(phase, formData.mainRisk, formData.painPoints, formData.tools, customerExperience, growthReadiness, exitReadiness);
+  const actionItems = generateActionItems(phase, formData.goals, formData.painPoints, formData.tools, customerExperience, growthReadiness, exitReadiness);
+  const reviewRecommended = shouldRecommendReview(phase, riskPosture, operations, healthScore, exitReadiness);
 
   const profile = {
     id: `profile-${Date.now()}`,
@@ -127,15 +149,16 @@ const splitField = (value, fallback) => {
     .slice(0, 4) || fallback;
 };
 
-const shouldRecommendReview = (phase, riskPosture, operations, healthScore) => {
+const shouldRecommendReview = (phase, riskPosture, operations, healthScore, exitReadiness = 3) => {
   if (phase === 'compliance') return true;
   if (phase === 'exit') return true;
   if (riskPosture <= 2) return true;
   if (operations <= 2 && healthScore < 60) return true;
+  if (exitReadiness <= 2 && healthScore < 60) return true;
   return false;
 };
 
-const recommendPhase = (situation, clarity, operations, riskPosture, automation) => {
+const recommendPhase = (situation, clarity, operations, riskPosture, automation, customerExperience = 3, growthReadiness = 3, exitReadiness = 3) => {
   const weighted = {
     creation: 0,
     operation: 0,
@@ -160,11 +183,28 @@ const recommendPhase = (situation, clarity, operations, riskPosture, automation)
   if (automation <= 2 && operations >= 3) weighted.automation += 2;
   if (clarity >= 4 && operations >= 3) weighted.scaling += 2;
 
+  // A business that says it's ready to get bigger (growthReadiness) leans
+  // toward the Scaling phase; one that isn't ready yet points back to
+  // Operation or Auditing so the basics get shored up first.
+  if (growthReadiness >= 4 && operations >= 3) weighted.scaling += 2;
+  if (growthReadiness <= 2) weighted.operation += 1;
+
+  // A low "how easy would it be to sell/hand off today" answer is a strong
+  // signal toward Exit Readiness work, even outside the "preparing to exit"
+  // situation, because exit-readiness gaps are worth surfacing early.
+  if (exitReadiness <= 2) weighted.exit += 2;
+
+  // Poor customer experience points toward tightening day-to-day operations
+  // or doing a fuller audit, since customer problems are usually a symptom
+  // of an operational gap.
+  if (customerExperience <= 2) weighted.operation += 1;
+  if (customerExperience <= 2 && operations >= 3) weighted.auditing += 1;
+
   const phase = Object.entries(weighted).sort((a, b) => b[1] - a[1])[0][0];
   return phase;
 };
 
-const generateRiskFlags = (phase, mainRisk, painPoints, tools) => {
+const generateRiskFlags = (phase, mainRisk, painPoints, tools, customerExperience = 3, growthReadiness = 3, exitReadiness = 3) => {
   const flags = [];
 
   if (mainRisk) flags.push(mainRisk);
@@ -172,13 +212,16 @@ const generateRiskFlags = (phase, mainRisk, painPoints, tools) => {
   if (phase === 'compliance') flags.push('Legal, privacy, or risk reviews may be behind');
   if (phase === 'automation') flags.push('Manual workflows are creating drag and inconsistency');
   if (phase === 'operation') flags.push('Operating rhythm is not yet stable');
+  if (customerExperience <= 2) flags.push('Customers may not feel fully taken care of');
+  if (growthReadiness <= 2) flags.push('The business may not be ready to handle more growth yet');
+  if (exitReadiness <= 2) flags.push('The business would be hard to sell or hand off today');
   if (painPoints) flags.push(...splitField(painPoints, []).slice(0, 2));
   if (tools) flags.push('Tool stack may need better integration or standardization');
 
   return [...new Set(flags)].slice(0, 4);
 };
 
-const generateActionItems = (phase, goals, painPoints, tools) => {
+const generateActionItems = (phase, goals, painPoints, tools, customerExperience = 3, growthReadiness = 3, exitReadiness = 3) => {
   const baseActions = {
     creation: [
       'Clarify the offer and the customer problem.',
@@ -231,6 +274,18 @@ const generateActionItems = (phase, goals, painPoints, tools) => {
 
   if (tools) {
     result.push('Review whether the current tool stack is actually supporting the workflow or adding friction.');
+  }
+
+  if (customerExperience <= 2) {
+    result.push('Improve the customer experience: follow up faster and make the process feel more reliable.');
+  }
+
+  if (growthReadiness <= 2) {
+    result.push('Shore up the basics (systems, staffing, cash flow) before pushing for more growth.');
+  }
+
+  if (exitReadiness <= 2) {
+    result.push('Start documenting the business (finances, processes, key contacts) so it would be easier to sell or hand off later.');
   }
 
   return [...new Set(result)].slice(0, 5);
@@ -449,7 +504,10 @@ const bindRangeValues = () => {
     { id: 'clarity', label: 'clarity-value' },
     { id: 'operations', label: 'operations-value' },
     { id: 'riskPosture', label: 'riskPosture-value' },
-    { id: 'automation', label: 'automation-value' }
+    { id: 'automation', label: 'automation-value' },
+    { id: 'customerExperience', label: 'customerExperience-value' },
+    { id: 'growthReadiness', label: 'growthReadiness-value' },
+    { id: 'exitReadiness', label: 'exitReadiness-value' }
   ];
 
   for (const control of controls) {

@@ -64,12 +64,15 @@ This guide is for internal QA validation after the app is deployed.
 ## Section 4: Form Intake
 
 **Expected:**
-- All 12 form fields present
+- All 15 form fields present (expanded from 12 to 15 on September 27, 2026 to
+  match the full 7-category health scorecard: business clarity, customer
+  experience, operational health, risk/compliance, growth readiness,
+  automation maturity, and exit readiness — in plain, everyday language)
 - Range sliders sync their value displays
 - Textareas are appropriately sized
 - Buttons render: "Generate business profile" and "Back to home"
 
-**Actual:** All 12 fields confirmed present: businessName, businessType, situation, clarity, operations, riskPosture, automation, goals, painPoints, mainRisk, tools, customerSummary.
+**Actual:** All 15 fields confirmed present: businessName, businessType, situation, clarity, operations, riskPosture, automation, customerExperience, growthReadiness, exitReadiness, goals, painPoints, mainRisk, tools, customerSummary. The three new sliders use plain-language questions ("How happy and taken care of do your customers feel?", "How ready is your business to get bigger?", "If you had to sell or hand off the business today, how easy would that be?") instead of technical scorecard terminology.
 
 **Pass/Fail:** ☒ Pass ☐ Fail
 
@@ -170,11 +173,23 @@ This guide is for internal QA validation after the app is deployed.
 
 ## Section 12: Health Score Logic
 
-**Expected:** Scores proportional to input level and within 0–100.
+**Updated September 27, 2026:** The health score formula changed from a
+4-category weighted average to a simple, plain-language 7-category average
+(all 7 sliders count equally — no hidden weighting to explain). Re-tested
+against the live formula after the change:
 
-**Test 1 (Low, all inputs = 1):** Expected 15–35. **Actual: 20/100.** ✓
-**Test 2 (Medium, all inputs = 3):** Expected 45–65. **Actual: 60/100.** ✓
-**Test 3 (High, all inputs = 5):** Expected 85–100. **Actual: 100/100.** ✓
+**Expected:** Scores proportional to input level and within 0–100. A simple
+average means all-1s = 20, all-3s = 60, all-5s = 100 exactly.
+
+**Test 1 (Low, all 7 inputs = 1):** Expected 20. **Actual: 20/100.** ✓
+**Test 2 (Medium, all 7 inputs = 3):** Expected 60. **Actual: 60/100.** ✓
+**Test 3 (High, all 7 inputs = 5):** Expected 100. **Actual: 100/100.** ✓
+
+Also tested that a single low answer among otherwise-strong answers
+correctly surfaces a matching risk flag and action item:
+- Low "exit readiness" alone → risk flag: "The business would be hard to sell or hand off today" ✓
+- Low "customer experience" alone → risk flag: "Customers may not feel fully taken care of" ✓
+- Low "growth readiness" alone → risk flag: "The business may not be ready to handle more growth yet" ✓
 
 Scores increased consistently as inputs increased (20 → 60 → 100).
 
