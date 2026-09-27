@@ -23,6 +23,8 @@ This module helps users plan what to do if their business systems are compromise
 - contact a professional if data loss or payment compromise happened
 - notify legal counsel if necessary
 
+**A real-world detail worth planning for in advance:** the fastest possible way to cut someone off is when their access depends on exactly one thing you can find and remove — a single shared secret, key, or account entry — rather than being scattered across several systems you'd have to hunt through under pressure. If you're building or buying software, ask whoever built it: "if I needed to cut off one person's access right now, what's the one thing I'd go delete or change?" If nobody has a clear answer, that's a gap to close before an incident, not during one. See [security/lessons-from-real-projects.md](./lessons-from-real-projects.md) for a real example of this pattern.
+
 ## What to avoid
 
 - ignoring a security issue and hoping it disappears

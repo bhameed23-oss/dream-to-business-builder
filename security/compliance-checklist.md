@@ -37,8 +37,13 @@ You should think seriously about:
 
 Do not treat compliance as a small checklist. It can become serious fast if customer or employee data is mishandled.
 
+## If custom software is involved
+
+Everything above is about the business process. If any of it is being handled by custom-built or AI-assisted software (rather than an established, off-the-shelf platform), that software needs its own technical review before it touches real customer data — see [security/technical-pitfall-checklist.md](./technical-pitfall-checklist.md) for the specific, concrete bugs to check for.
+
 ## Related docs
 
 - [security/README.md](./security/README.md)
 - [security/security-training.md](./security/security-training.md)
+- [security/technical-pitfall-checklist.md](./technical-pitfall-checklist.md)
 - [security/incident-response.md](./security/incident-response.md)

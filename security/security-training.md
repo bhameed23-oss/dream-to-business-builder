@@ -35,8 +35,13 @@ The framework should explain security in simple terms:
 
 Security is a business process, not just a technical issue. If you are handling sensitive or regulated information, you should involve a professional reviewer.
 
+## See it done for real
+
+Every idea above sounds reasonable in the abstract. To see what "unique passwords," "review access regularly," and "back up critical information" actually look like when they're built into a real, working system — including a couple of real mistakes that got caught and fixed — see [security/lessons-from-real-projects.md](./lessons-from-real-projects.md).
+
 ## Related docs
 
+- [security/lessons-from-real-projects.md](./lessons-from-real-projects.md)
 - [security/compliance-checklist.md](./security/compliance-checklist.md)
 - [security/incident-response.md](./security/incident-response.md)
 - [security/third-party-tool-vetting.md](./security/third-party-tool-vetting.md)

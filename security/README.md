@@ -46,6 +46,8 @@ We recommend a structured review path:
 ## Core modules
 
 - security-training.md
+- lessons-from-real-projects.md — concrete, plain-language security patterns pulled from an actual, previously-audited project in this account's portfolio, not just theory
+- technical-pitfall-checklist.md — a checklist for anyone getting custom software built (a website login, an app, an internal tool), especially AI-assisted builds
 - data-protection.md
 - compliance-checklist.md
 - incident-response.md
@@ -78,5 +80,7 @@ Then:
 
 - [security/README.md](./security/README.md)
 - [security/security-training.md](./security/security-training.md)
+- [security/lessons-from-real-projects.md](./security/lessons-from-real-projects.md)
+- [security/technical-pitfall-checklist.md](./security/technical-pitfall-checklist.md)
 - [security/compliance-checklist.md](./security/compliance-checklist.md)
 - [security/incident-response.md](./security/incident-response.md)
