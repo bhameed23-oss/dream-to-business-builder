@@ -304,7 +304,7 @@ const updateScoreRing = (score) => {
 
   const clamped = Math.max(0, Math.min(100, score));
   const level = clamped >= 80 ? 'strong' : clamped >= 60 ? 'healthy' : clamped >= 40 ? 'watch' : 'critical';
-  const color = clamped >= 80 ? 'var(--accent)' : clamped >= 60 ? '#3b82f6' : clamped >= 40 ? 'var(--warning)' : 'var(--danger)';
+  const color = clamped >= 80 ? 'var(--accent)' : clamped >= 60 ? 'var(--moss)' : clamped >= 40 ? 'var(--warning)' : 'var(--danger)';
 
   ring.style.background = `conic-gradient(${color} 0 ${clamped}%, var(--panel-soft) ${clamped}% 100%)`;
   ring.dataset.level = level;

@@ -3,12 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dream to Business Builder</title>
-    <!-- Simple inline icon (a circle with an upward growth line) so the browser
-         tab doesn't show a broken-image icon and the console doesn't log a
-         404 for a missing favicon.ico. Encoded directly as SVG text, so no
-         separate image file is needed. -->
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%232a5cff'/%3E%3Cpath d='M16 40 L28 28 L36 34 L48 20' stroke='white' stroke-width='4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='48' cy='20' r='4' fill='white'/%3E%3C/svg%3E" />
+    <title>Dream to Business Builder · Belvi</title>
+    <meta name="description" content="A practical lifecycle review for founders and business owners across creation, operations, growth, risk, and exit readiness." />
+    <meta name="theme-color" content="#16352A" />
+
+    <!-- Google Fonts: Newsreader (headings) and Instrument Sans (body & UI) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..600&family=Instrument+Sans:wght@400;500;600;700&display=swap" />
+
+    <!-- Belvi Arch + Growth vector icon in brand moss and brass -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%232C4A3B'/%3E%3Cpath d='M32 14 C22 14 18 20 18 30 L18 50 L46 50 L46 30 C46 20 42 14 32 14 Z' fill='none' stroke='%23B0864A' stroke-width='3.5'/%3E%3Cpath d='M23 38 L30 31 L35 36 L41 26' fill='none' stroke='%23FFFDFA' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
     <link rel="stylesheet" href="app/styles.css" />
   </head>
   <body>
@@ -20,8 +25,8 @@
           <a href="#how-it-works">How it works</a>
           <a href="#phases">Lifecycle</a>
           <a href="#safety">Safety</a>
-          <!-- Small cross-link to the sister site (Belvi.casa, tools for Chicago agents). -->
-          <a href="https://belvi.casa" rel="noopener">Belvi.casa</a>
+          <!-- Small cross-link to sister site Belvi.casa -->
+          <a class="nav-sister" href="https://belvi.casa" rel="noopener">Belvi.casa ↗</a>
         </nav>
         <button class="primary-btn" id="start-review-btn">Start your review</button>
       </div>
@@ -141,6 +146,17 @@
         </div>
       </section>
     </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-pills">
+          <a href="https://belvi.casa">Made with Belvi.casa</a>
+          <a href="https://chicago.belvi.casa">ChaiBoy's List</a>
+        </div>
+        <p class="footer-note">A structured business lifecycle guide, not a substitute for legal, financial, or compliance advice. Part of the Belvi family of tools.</p>
+      </div>
+    </footer>
+
     <script src="app/app.js"></script>
   </body>
 </html>
