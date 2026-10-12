@@ -36,22 +36,6 @@ const PHASES = {
   }
 };
 
-// ---------------------------------------------------------------------------
-// NEXT STEPS / BUSINESS PACK LINKING
-// ---------------------------------------------------------------------------
-// Every phase key above (creation, operation, auditing, etc.) has a matching
-// folder inside /framework/business-lifecycle/ in this same GitHub repo.
-// Each of those folders holds three files:
-//   - README.md      -> the "why this phase matters" explanation
-//   - checklist.md    -> a step-by-step, actionable to-do list for the phase
-//   - resources.md    -> real, free external resources (SBA, SCORE, FTC, etc.)
-//
-// This section builds the links from a phase key to those three files so the
-// dashboard can show the user exactly where to go next, instead of just
-// telling them the phase name and leaving them to figure out the rest.
-// ---------------------------------------------------------------------------
-
-// Maps each internal phase key to its folder name on GitHub.
 const PHASE_FOLDERS = {
   creation: '01-creation',
   operation: '02-operation',
@@ -62,14 +46,96 @@ const PHASE_FOLDERS = {
   exit: '07-exit-readiness'
 };
 
-// Base URL for viewing files in this repo on GitHub (renders Markdown nicely,
-// unlike a raw.githubusercontent.com link which shows plain text).
 const REPO_BLOB_BASE = 'https://github.com/bhameed23-oss/dream-to-business-builder/blob/main/framework/business-lifecycle';
+const ANALYTICS_KEY = 'dreamToBusinessBuilderAnalytics';
+const FEEDBACK_KEY = 'dreamToBusinessBuilderFeedback';
+const PROFILE_STORAGE_KEY = 'dreamToBusinessBuilderProfile';
 
-// Given a phase key (e.g. "operation"), returns an object with direct links
-// to that phase's overview, checklist, and resources page.
-// If the phase key is unknown, this falls back to the "operation" phase so
-// the dashboard never ends up with a broken/empty link.
+const asNumber = (value, fallback = 3) => {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : fallback;
+};
+
+const htmlSafe = (value, fallback = '') => {
+  if (value === null || value === undefined) return fallback;
+  const stringValue = String(value).trim();
+  return stringValue || fallback;
+};
+
+const normalizeProfile = (profile) => {
+  if (!profile || typeof profile !== 'object') return null;
+
+  const currentPhase = PHASES[profile.currentPhase] ? profile.currentPhase : 'operation';
+  const normalized = {
+    ...profile,
+    currentPhase,
+    businessName: htmlSafe(profile.businessName, 'Untitled Business'),
+    businessType: htmlSafe(profile.businessType, 'service-business'),
+    situation: htmlSafe(profile.situation, 'new-business'),
+    customerSummary: htmlSafe(profile.customerSummary, 'The business needs a clearer and more reliable customer experience.'),
+    primaryRisk: htmlSafe(profile.primaryRisk, 'Unclear operating rhythm'),
+    reviewRecommended: Boolean(profile.reviewRecommended),
+    riskFlags: Array.isArray(profile.riskFlags) ? profile.riskFlags.filter(Boolean).slice(0, 4) : [],
+    actionItems: Array.isArray(profile.actionItems) ? profile.actionItems.filter(Boolean).slice(0, 5) : [],
+    healthScore: Number.isFinite(Number(profile.healthScore)) ? Number(profile.healthScore) : 0
+  };
+
+  if (normalized.healthScore < 0) normalized.healthScore = 0;
+  if (normalized.healthScore > 100) normalized.healthScore = 100;
+
+  return normalized;
+};
+
+const readStoredCollection = (key, fallback = []) => {
+  try {
+    const stored = localStorage.getItem(key);
+    if (!stored) return fallback;
+    const parsed = JSON.parse(stored);
+    return Array.isArray(parsed) ? parsed : fallback;
+  } catch (error) {
+    return fallback;
+  }
+};
+
+const writeStoredCollection = (key, items) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(items));
+  } catch (error) {
+    // Ignore localStorage write failures in constrained browsers.
+  }
+};
+
+const trackEvent = (eventName, payload = {}) => {
+  const entries = readStoredCollection(ANALYTICS_KEY, []);
+  entries.push({
+    eventName,
+    payload,
+    timestamp: new Date().toISOString()
+  });
+
+  if (entries.length > 200) {
+    entries.splice(0, entries.length - 200);
+  }
+
+  writeStoredCollection(ANALYTICS_KEY, entries);
+};
+
+const saveFeedback = (profile, rating, note = '') => {
+  const payload = {
+    rating,
+    note,
+    businessName: htmlSafe(profile?.businessName, 'Untitled Business'),
+    currentPhase: PHASES[profile?.currentPhase] ? profile.currentPhase : 'operation',
+    healthScore: Number.isFinite(Number(profile?.healthScore)) ? Number(profile.healthScore) : 0,
+    timestamp: new Date().toISOString()
+  };
+
+  const entries = readStoredCollection(FEEDBACK_KEY, []);
+  entries.push(payload);
+  writeStoredCollection(FEEDBACK_KEY, entries.slice(-100));
+  return payload;
+};
+
 const getPhaseLinks = (phaseKey) => {
   const folder = PHASE_FOLDERS[phaseKey] || PHASE_FOLDERS.operation;
   const base = `${REPO_BLOB_BASE}/${folder}`;
@@ -80,38 +146,20 @@ const getPhaseLinks = (phaseKey) => {
   };
 };
 
-// ---------------------------------------------------------------------------
-// HEALTH SCORE — how it's calculated (plain-language explanation)
-// ---------------------------------------------------------------------------
-// The form asks 7 simple questions, each answered on a 1-to-5 slider:
-//   1. clarity              - how clear is your business direction?
-//   2. operations           - how stable are your day-to-day operations?
-//   3. riskPosture          - how strong is your risk/compliance posture?
-//   4. automation           - how mature are your systems/automation?
-//   5. customerExperience   - how well are you treating your customers?
-//   6. growthReadiness      - how ready are you to get bigger?
-//   7. exitReadiness        - how easy would it be to sell or hand off today?
-//
-// To keep the math easy to explain to anyone (no advanced weighting formula
-// to justify), the health score is simply the average of all 7 answers,
-// turned into a score out of 100. Every question counts the same amount.
-// Example: if someone answers "3" on every question, that's 21 out of a
-// possible 35 points, which becomes 60 out of 100.
-// ---------------------------------------------------------------------------
 const getProfileFromForm = (formData) => {
-  const clarity = Number(formData.clarity || 3);
-  const operations = Number(formData.operations || 3);
-  const riskPosture = Number(formData.riskPosture || 3);
-  const automation = Number(formData.automation || 2);
-  const customerExperience = Number(formData.customerExperience || 3);
-  const growthReadiness = Number(formData.growthReadiness || 3);
-  const exitReadiness = Number(formData.exitReadiness || 3);
+  const clarity = asNumber(formData.clarity, 3);
+  const operations = asNumber(formData.operations, 3);
+  const riskPosture = asNumber(formData.riskPosture, 3);
+  const automation = asNumber(formData.automation, 2);
+  const customerExperience = asNumber(formData.customerExperience, 3);
+  const growthReadiness = asNumber(formData.growthReadiness, 3);
+  const exitReadiness = asNumber(formData.exitReadiness, 3);
 
   const totalPoints = clarity + operations + riskPosture + automation + customerExperience + growthReadiness + exitReadiness;
-  const maxPossiblePoints = 5 * 7; // 7 questions, each worth up to 5 points
+  const maxPossiblePoints = 5 * 7;
   const healthScore = Math.min(100, Math.max(0, Math.round((totalPoints / maxPossiblePoints) * 100)));
 
-  const situation = formData.situation || 'new-business';
+  const situation = htmlSafe(formData.situation, 'new-business');
   const phase = recommendPhase(situation, clarity, operations, riskPosture, automation, customerExperience, growthReadiness, exitReadiness);
   const riskFlags = generateRiskFlags(phase, formData.mainRisk, formData.painPoints, formData.tools, customerExperience, growthReadiness, exitReadiness);
   const actionItems = generateActionItems(phase, formData.goals, formData.painPoints, formData.tools, customerExperience, growthReadiness, exitReadiness);
@@ -119,15 +167,15 @@ const getProfileFromForm = (formData) => {
 
   const profile = {
     id: `profile-${Date.now()}`,
-    businessName: formData.businessName || 'Untitled Business',
-    businessType: formData.businessType || 'service-business',
+    businessName: htmlSafe(formData.businessName, 'Untitled Business'),
+    businessType: htmlSafe(formData.businessType, 'service-business'),
     situation,
     currentPhase: phase,
     goals: splitField(formData.goals, ['Clarify direction', 'Improve operations']),
     painPoints: splitField(formData.painPoints, ['Operational inconsistency']),
-    mainRisk: formData.mainRisk || 'Operational instability',
-    customerSummary: formData.customerSummary || 'The business needs a clearer and more reliable customer experience.',
-    toolSummary: formData.tools || 'Essential tools are being used, but process consistency is still developing.',
+    mainRisk: htmlSafe(formData.mainRisk, 'Operational instability'),
+    customerSummary: htmlSafe(formData.customerSummary, 'The business needs a clearer and more reliable customer experience.'),
+    toolSummary: htmlSafe(formData.tools, 'Essential tools are being used, but process consistency is still developing.'),
     healthScore,
     riskFlags,
     actionItems,
@@ -137,16 +185,18 @@ const getProfileFromForm = (formData) => {
     updatedAt: new Date().toISOString()
   };
 
-  return profile;
+  return normalizeProfile(profile);
 };
 
 const splitField = (value, fallback) => {
-  if (!value) return fallback;
-  return value
+  if (!value) return Array.isArray(fallback) ? fallback : [];
+  const items = String(value)
     .split(/\n|,/) 
     .map((item) => item.trim())
     .filter(Boolean)
-    .slice(0, 4) || fallback;
+    .slice(0, 4);
+
+  return items.length ? items : (Array.isArray(fallback) ? fallback : []);
 };
 
 const shouldRecommendReview = (phase, riskPosture, operations, healthScore, exitReadiness = 3) => {
@@ -182,32 +232,19 @@ const recommendPhase = (situation, clarity, operations, riskPosture, automation,
   if (riskPosture >= 4 && operations >= 3) weighted.auditing += 2;
   if (automation <= 2 && operations >= 3) weighted.automation += 2;
   if (clarity >= 4 && operations >= 3) weighted.scaling += 2;
-
-  // A business that says it's ready to get bigger (growthReadiness) leans
-  // toward the Scaling phase; one that isn't ready yet points back to
-  // Operation or Auditing so the basics get shored up first.
   if (growthReadiness >= 4 && operations >= 3) weighted.scaling += 2;
   if (growthReadiness <= 2) weighted.operation += 1;
-
-  // A low "how easy would it be to sell/hand off today" answer is a strong
-  // signal toward Exit Readiness work, even outside the "preparing to exit"
-  // situation, because exit-readiness gaps are worth surfacing early.
   if (exitReadiness <= 2) weighted.exit += 2;
-
-  // Poor customer experience points toward tightening day-to-day operations
-  // or doing a fuller audit, since customer problems are usually a symptom
-  // of an operational gap.
   if (customerExperience <= 2) weighted.operation += 1;
   if (customerExperience <= 2 && operations >= 3) weighted.auditing += 1;
 
-  const phase = Object.entries(weighted).sort((a, b) => b[1] - a[1])[0][0];
-  return phase;
+  return Object.entries(weighted).sort((a, b) => b[1] - a[1])[0][0];
 };
 
 const generateRiskFlags = (phase, mainRisk, painPoints, tools, customerExperience = 3, growthReadiness = 3, exitReadiness = 3) => {
   const flags = [];
 
-  if (mainRisk) flags.push(mainRisk);
+  if (mainRisk) flags.push(String(mainRisk).trim());
   if (phase === 'scaling') flags.push('Growth is outpacing internal structure');
   if (phase === 'compliance') flags.push('Legal, privacy, or risk reviews may be behind');
   if (phase === 'automation') flags.push('Manual workflows are creating drag and inconsistency');
@@ -218,7 +255,7 @@ const generateRiskFlags = (phase, mainRisk, painPoints, tools, customerExperienc
   if (painPoints) flags.push(...splitField(painPoints, []).slice(0, 2));
   if (tools) flags.push('Tool stack may need better integration or standardization');
 
-  return [...new Set(flags)].slice(0, 4);
+  return [...new Set(flags.map((flag) => String(flag).trim()).filter(Boolean))].slice(0, 4);
 };
 
 const generateActionItems = (phase, goals, painPoints, tools, customerExperience = 3, growthReadiness = 3, exitReadiness = 3) => {
@@ -260,7 +297,7 @@ const generateActionItems = (phase, goals, painPoints, tools, customerExperience
     ]
   };
 
-  const result = [...baseActions[phase] || baseActions.operation];
+  const result = [...(baseActions[phase] || baseActions.operation)];
 
   const parsedGoals = splitField(goals, []);
   if (parsedGoals.length) {
@@ -288,7 +325,7 @@ const generateActionItems = (phase, goals, painPoints, tools, customerExperience
     result.push('Start documenting the business (finances, processes, key contacts) so it would be easier to sell or hand off later.');
   }
 
-  return [...new Set(result)].slice(0, 5);
+  return [...new Set(result.filter(Boolean))].slice(0, 5);
 };
 
 const getHealthBand = (score) => {
@@ -302,7 +339,7 @@ const updateScoreRing = (score) => {
   const ring = document.querySelector('.score-ring');
   if (!ring) return;
 
-  const clamped = Math.max(0, Math.min(100, score));
+  const clamped = Math.max(0, Math.min(100, Number(score) || 0));
   const level = clamped >= 80 ? 'strong' : clamped >= 60 ? 'healthy' : clamped >= 40 ? 'watch' : 'critical';
   const color = clamped >= 80 ? 'var(--accent)' : clamped >= 60 ? 'var(--moss)' : clamped >= 40 ? 'var(--warning)' : 'var(--danger)';
 
@@ -313,7 +350,7 @@ const updateScoreRing = (score) => {
 
 const renderPhaseText = (phaseKey) => {
   const phase = PHASES[phaseKey] || PHASES.operation;
-  return phase.title + ': ' + phase.description;
+  return `${phase.title}: ${phase.description}`;
 };
 
 const renderPhaseDetail = (phaseKey) => {
@@ -322,6 +359,9 @@ const renderPhaseDetail = (phaseKey) => {
 };
 
 const renderProfile = (profile) => {
+  const normalizedProfile = normalizeProfile(profile);
+  if (!normalizedProfile) return;
+
   const dashboard = document.getElementById('dashboard');
   const phaseTitle = document.getElementById('phase-title');
   const healthScore = document.getElementById('health-score');
@@ -334,12 +374,12 @@ const renderProfile = (profile) => {
   const reviewBadge = document.getElementById('review-badge');
   const healthStatus = document.getElementById('health-status');
 
-  phaseTitle.textContent = PHASES[profile.currentPhase]?.title || 'Business phase';
-  const scoreValue = Number(profile.healthScore || 0);
+  phaseTitle.textContent = PHASES[normalizedProfile.currentPhase]?.title || 'Business phase';
+  const scoreValue = Number(normalizedProfile.healthScore || 0);
   healthScore.textContent = `${scoreValue}/100`;
-  primaryRisk.textContent = profile.primaryRisk;
-  recommendation.textContent = renderPhaseText(profile.currentPhase);
-  phaseDetail.textContent = renderPhaseDetail(profile.currentPhase);
+  primaryRisk.textContent = normalizedProfile.primaryRisk;
+  recommendation.textContent = renderPhaseText(normalizedProfile.currentPhase);
+  phaseDetail.textContent = renderPhaseDetail(normalizedProfile.currentPhase);
 
   if (healthStatus) {
     healthStatus.textContent = getHealthBand(scoreValue);
@@ -349,27 +389,22 @@ const renderProfile = (profile) => {
   updateScoreRing(scoreValue);
 
   const summary = [
-    `${profile.businessName} is a ${profile.businessType.replace('-', ' ')} business.`,
-    `Current focus: ${profile.situation.replace('-', ' ')}.`,
-    `Customer expectation: ${profile.customerSummary}`
+    `${normalizedProfile.businessName} is a ${String(normalizedProfile.businessType).replace('-', ' ')} business.`,
+    `Current focus: ${String(normalizedProfile.situation).replace('-', ' ')}.`,
+    `Customer expectation: ${normalizedProfile.customerSummary}`
   ].join(' ');
 
   profileSummary.textContent = summary;
-  riskFlags.innerHTML = profile.riskFlags.map((item) => `<li>${item}</li>`).join('');
-  actionItems.innerHTML = profile.actionItems.map((item) => `<li>${item}</li>`).join('');
+  riskFlags.innerHTML = (normalizedProfile.riskFlags || []).map((item) => `<li>${item}</li>`).join('');
+  actionItems.innerHTML = (normalizedProfile.actionItems || []).map((item) => `<li>${item}</li>`).join('');
 
-  reviewBadge.textContent = profile.reviewRecommended ? 'Professional review recommended' : 'Review recommended';
-  reviewBadge.dataset.level = profile.reviewRecommended ? 'critical' : 'watch';
+  reviewBadge.textContent = normalizedProfile.reviewRecommended ? 'Professional review recommended' : 'Review recommended';
+  reviewBadge.dataset.level = normalizedProfile.reviewRecommended ? 'critical' : 'watch';
 
-  // --- Next Steps panel -----------------------------------------------
-  // This is the part that turns a phase NAME into something the user can
-  // actually act on. It points to the real checklist and resources file
-  // for whatever phase they landed in, instead of leaving them to guess
-  // what to do with the recommendation.
   const nextStepsPanel = document.getElementById('next-steps-panel');
   if (nextStepsPanel) {
-    const phaseInfo = PHASES[profile.currentPhase] || PHASES.operation;
-    const links = getPhaseLinks(profile.currentPhase);
+    const phaseInfo = PHASES[normalizedProfile.currentPhase] || PHASES.operation;
+    const links = getPhaseLinks(normalizedProfile.currentPhase);
 
     const checklistLink = document.getElementById('next-steps-checklist-link');
     const resourcesLink = document.getElementById('next-steps-resources-link');
@@ -386,43 +421,46 @@ const renderProfile = (profile) => {
     nextStepsPanel.classList.remove('hidden');
   }
 
+  trackEvent('dashboard_rendered', {
+    currentPhase: normalizedProfile.currentPhase,
+    healthScore: scoreValue,
+    reviewRecommended: normalizedProfile.reviewRecommended,
+    businessName: normalizedProfile.businessName
+  });
+
   dashboard.classList.remove('hidden');
-  document.getElementById('intake').classList.add('hidden');
+  const intakeSection = document.getElementById('intake');
+  if (intakeSection) intakeSection.classList.add('hidden');
 };
 
 const saveProfile = (profile) => {
-  localStorage.setItem('dreamToBusinessBuilderProfile', JSON.stringify(profile));
+  try {
+    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(normalizeProfile(profile)));
+  } catch (error) {
+    // Ignore localStorage write failures in constrained browsers.
+  }
 };
 
 const loadProfile = () => {
-  const profileString = localStorage.getItem('dreamToBusinessBuilderProfile');
+  const profileString = localStorage.getItem(PROFILE_STORAGE_KEY);
   if (!profileString) return null;
 
   try {
     const parsed = JSON.parse(profileString);
-    return parsed;
+    return normalizeProfile(parsed);
   } catch (error) {
     return null;
   }
 };
 
-// ---------------------------------------------------------------------------
-// DOWNLOAD SUMMARY (the "exportable summary" feature)
-// ---------------------------------------------------------------------------
-// Turns a saved profile object into a plain-text report the user can save,
-// print, or send to someone else (an advisor, a business partner, an
-// accountant). Everything here runs in the browser — no server, no data
-// leaves the user's machine.
-// ---------------------------------------------------------------------------
-
-// Formats a value like "new-business" into "new business" for readability.
 const humanize = (value) => (value || '').toString().replace(/-/g, ' ');
 
-// Builds the full text report from a saved profile. Kept as its own function
-// (separate from the click handler below) so it's easy to test or reuse.
 const buildProfileSummaryText = (profile) => {
-  const phaseInfo = PHASES[profile.currentPhase] || PHASES.operation;
-  const links = getPhaseLinks(profile.currentPhase);
+  const normalizedProfile = normalizeProfile(profile);
+  if (!normalizedProfile) return 'No profile available.';
+
+  const phaseInfo = PHASES[normalizedProfile.currentPhase] || PHASES.operation;
+  const links = getPhaseLinks(normalizedProfile.currentPhase);
   const generatedOn = new Date().toLocaleDateString(undefined, {
     year: 'numeric', month: 'long', day: 'numeric'
   });
@@ -431,25 +469,25 @@ const buildProfileSummaryText = (profile) => {
     'Dream to Business Builder — Business Profile Summary',
     `Generated: ${generatedOn}`,
     '',
-    `Business: ${profile.businessName || 'Untitled Business'}`,
-    `Type: ${humanize(profile.businessType)}`,
-    `Situation: ${humanize(profile.situation)}`,
+    `Business: ${normalizedProfile.businessName || 'Untitled Business'}`,
+    `Type: ${humanize(normalizedProfile.businessType)}`,
+    `Situation: ${humanize(normalizedProfile.situation)}`,
     '',
     `Current Phase: ${phaseInfo.title}`,
     `${phaseInfo.description}`,
     '',
-    `Business Health Score: ${profile.healthScore}/100 (${getHealthBand(profile.healthScore)})`,
-    `Primary Risk: ${profile.primaryRisk}`,
-    `Professional Review: ${profile.reviewRecommended ? 'Recommended' : 'Not urgently needed right now'}`,
+    `Business Health Score: ${normalizedProfile.healthScore}/100 (${getHealthBand(normalizedProfile.healthScore)})`,
+    `Primary Risk: ${normalizedProfile.primaryRisk}`,
+    `Professional Review: ${normalizedProfile.reviewRecommended ? 'Recommended' : 'Not urgently needed right now'}`,
     ''
   ];
 
   lines.push('Top Risks:');
-  (profile.riskFlags || []).forEach((item) => lines.push(`  - ${item}`));
+  (normalizedProfile.riskFlags || []).forEach((item) => lines.push(`  - ${item}`));
   lines.push('');
 
   lines.push('Recommended Next Actions:');
-  (profile.actionItems || []).forEach((item) => lines.push(`  - ${item}`));
+  (normalizedProfile.actionItems || []).forEach((item) => lines.push(`  - ${item}`));
   lines.push('');
 
   lines.push('Continue working on this phase:');
@@ -463,15 +501,15 @@ const buildProfileSummaryText = (profile) => {
   return lines.join('\n');
 };
 
-// Triggers an actual file download in the browser. Uses a Blob + temporary
-// <a> tag, which is the standard way to save a generated file client-side
-// without needing a server to produce it.
 const downloadProfileSummary = (profile) => {
-  const text = buildProfileSummaryText(profile);
+  const normalizedProfile = normalizeProfile(profile);
+  if (!normalizedProfile) return;
+
+  const text = buildProfileSummaryText(normalizedProfile);
   const blob = new Blob([text], { type: 'text/plain' });
   const url = URL.createObjectURL(blob);
 
-  const safeName = (profile.businessName || 'business')
+  const safeName = (normalizedProfile.businessName || 'business')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
@@ -484,8 +522,12 @@ const downloadProfileSummary = (profile) => {
   link.click();
   document.body.removeChild(link);
 
-  // Free the memory the browser set aside for the download link.
   URL.revokeObjectURL(url);
+  trackEvent('profile_summary_downloaded', {
+    businessName: normalizedProfile.businessName,
+    currentPhase: normalizedProfile.currentPhase,
+    healthScore: normalizedProfile.healthScore
+  });
 };
 
 const handleFormSubmit = (event) => {
@@ -493,10 +535,25 @@ const handleFormSubmit = (event) => {
 
   const form = event.target;
   const formData = Object.fromEntries(new FormData(form).entries());
-  const profile = getProfileFromForm(formData);
 
+  const required = ['businessType', 'situation'];
+  const missing = required.filter((key) => !formData[key]);
+  if (missing.length) {
+    const firstMissing = missing[0];
+    const field = form.querySelector(`[name="${firstMissing}"]`);
+    field?.focus();
+    return;
+  }
+
+  const profile = getProfileFromForm(formData);
   saveProfile(profile);
   renderProfile(profile);
+  trackEvent('profile_created', {
+    currentPhase: profile.currentPhase,
+    healthScore: profile.healthScore,
+    businessName: profile.businessName,
+    situation: profile.situation
+  });
 };
 
 const bindRangeValues = () => {
@@ -523,30 +580,88 @@ const bindRangeValues = () => {
   }
 };
 
+const bindFeedbackWidget = () => {
+  const panel = document.getElementById('feedback-panel');
+  if (!panel) return;
+
+  const voteButtons = panel.querySelectorAll('.feedback-btn');
+  const noteField = document.getElementById('feedback-note');
+  const submitButton = document.getElementById('submit-feedback-btn');
+  const status = document.getElementById('feedback-status');
+
+  let selectedRating = '';
+
+  voteButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      selectedRating = button.dataset.rating;
+      voteButtons.forEach((btn) => btn.classList.toggle('selected', btn === button));
+    });
+  });
+
+  submitButton?.addEventListener('click', () => {
+    const profile = loadProfile();
+    if (!profile) {
+      status.textContent = 'Submit a profile first so we have a result to rate.';
+      status.classList.remove('hidden');
+      return;
+    }
+
+    if (!selectedRating) {
+      status.textContent = 'Please choose a rating first.';
+      status.classList.remove('hidden');
+      return;
+    }
+
+    const note = noteField?.value || '';
+    saveFeedback(profile, selectedRating, note);
+    status.textContent = 'Thanks — your feedback was saved locally.';
+    status.classList.remove('hidden');
+    trackEvent('feedback_submitted', {
+      rating: selectedRating,
+      phase: profile.currentPhase,
+      healthScore: profile.healthScore
+    });
+  });
+};
+
 const bindActions = () => {
   document.getElementById('start-review-btn')?.addEventListener('click', () => {
-    document.getElementById('intake').classList.remove('hidden');
-    document.getElementById('home').scrollIntoView({ behavior: 'smooth' });
+    trackEvent('cta_click', { target: 'start-review-btn' });
+    const intake = document.getElementById('intake');
+    if (intake) intake.classList.remove('hidden');
+    document.getElementById('home')?.scrollIntoView({ behavior: 'smooth' });
   });
 
   document.getElementById('hero-start-btn')?.addEventListener('click', () => {
-    document.getElementById('intake').classList.remove('hidden');
-    document.getElementById('intake').scrollIntoView({ behavior: 'smooth' });
+    trackEvent('cta_click', { target: 'hero-start-btn' });
+    const intake = document.getElementById('intake');
+    if (intake) {
+      intake.classList.remove('hidden');
+      intake.scrollIntoView({ behavior: 'smooth' });
+    }
   });
 
   document.getElementById('learn-more-btn')?.addEventListener('click', () => {
-    document.getElementById('how-it-works').scrollIntoView({ behavior: 'smooth' });
+    trackEvent('cta_click', { target: 'learn-more-btn' });
+    document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
   });
 
   document.getElementById('cancel-form-btn')?.addEventListener('click', () => {
-    document.getElementById('intake').classList.add('hidden');
-    document.getElementById('home').scrollIntoView({ behavior: 'smooth' });
+    trackEvent('form_cancelled', {});
+    const intake = document.getElementById('intake');
+    if (intake) intake.classList.add('hidden');
+    document.getElementById('home')?.scrollIntoView({ behavior: 'smooth' });
   });
 
   document.getElementById('edit-profile-btn')?.addEventListener('click', () => {
-    document.getElementById('dashboard').classList.add('hidden');
-    document.getElementById('intake').classList.remove('hidden');
-    document.getElementById('intake').scrollIntoView({ behavior: 'smooth' });
+    trackEvent('edit_profile_clicked', {});
+    const dashboard = document.getElementById('dashboard');
+    const intake = document.getElementById('intake');
+    if (dashboard) dashboard.classList.add('hidden');
+    if (intake) {
+      intake.classList.remove('hidden');
+      intake.scrollIntoView({ behavior: 'smooth' });
+    }
   });
 
   document.getElementById('export-profile-btn')?.addEventListener('click', () => {
@@ -560,7 +675,9 @@ const bindActions = () => {
 const initialize = () => {
   bindRangeValues();
   bindActions();
+  bindFeedbackWidget();
   updateScoreRing(72);
+  trackEvent('app_loaded', { userAgent: navigator.userAgent });
 
   const savedProfile = loadProfile();
   if (savedProfile) {
@@ -569,3 +686,9 @@ const initialize = () => {
 };
 
 initialize();
+
+if (typeof globalThis !== 'undefined') {
+  globalThis.trackEvent = trackEvent;
+  globalThis.getAnalytics = () => readStoredCollection(ANALYTICS_KEY, []);
+  globalThis.getFeedback = () => readStoredCollection(FEEDBACK_KEY, []);
+}
