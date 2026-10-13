@@ -1,295 +1,313 @@
-const PHASE_SAFETY_RULES = {
-  creation: [
-    'Clarify the customer problem before expanding the offer.',
-    'Keep delivery simple and repeatable while the business is still forming.',
-    'Document what success looks like before adding more complexity.'
-  ],
-  operation: [
-    'Review the recurring workflow for bottlenecks and confusion.',
-    'Check whether customer follow-up is consistent and reliable.',
-    'Look for manual work that slows down the business or creates errors.'
-  ],
-  auditing: [
-    'Review the business as a system, not as isolated tasks.',
-    'Identify where ownership, timing, or communication breaks down.',
-    'Prioritize the biggest operational leaks before adding growth.'
-  ],
-  scaling: [
-    'Do not grow faster than the business can support consistently.',
-    'Document responsibilities and decision-makers before adding more volume.',
-    'Validate whether the current team, process, and tools can absorb more demand.'
-  ],
-  compliance: [
-    'Review legal, privacy, and customer-data risk exposures.',
-    'Check whether contracts, collection, handling, and recordkeeping are consistent.',
-    'Bring in professional guidance if the risk profile is significant.'
-  ],
-  automation: [
-    'Standardize the workflow before automation.',
-    'Review which tasks are repetitive enough to automate without creating blind spots.',
-    'Keep human oversight on anything that affects customer trust or legal obligations.'
-  ],
-  exit: [
-    'Review documentation, ownership, and operational dependencies before a handoff or sale.',
-    'Assess whether the business would be understandable to an external buyer or successor.',
-    'Clean up high-risk dependencies before moving toward transition.'
-  ]
-};
+const WEBSITE_ANALYZER_KEY = 'dreamToBusinessBuilderWebsiteAnalysis';
 
-const REVIEW_GATE_MESSAGES = {
-  creation: 'This phase is still early. Focus on clarity and stability before adding complexity.',
-  operation: 'Your operation is active but may still benefit from a structured process review.',
-  auditing: 'This is a good phase to tighten the system before major changes or growth.',
-  scaling: 'The core risk here is scaling too quickly without stronger processes or ownership.',
-  compliance: 'This phase may require legal, privacy, or financial review before moving forward confidently.',
-  automation: 'Automation should reduce friction, not create blind spots or customer risk.',
-  exit: 'This phase should include explicit exit or transition planning and documentation review.'
-};
-
-const buildSafetyChecks = (profile) => {
-  const normalizedProfile = normalizeProfile(profile);
-  if (!normalizedProfile) {
-    return {
-      summary: 'No profile is available yet. Complete the review to surface safety and review guidance.',
-      checks: [
-        'Add business context to see the safety review.',
-        'Document what the business is trying to achieve next.',
-        'Review the current phase and risk posture.'
-      ]
-    };
-  }
-
-  const checks = [...(PHASE_SAFETY_RULES[normalizedProfile.currentPhase] || PHASE_SAFETY_RULES.operation)];
-  if (normalizedProfile.reviewRecommended) {
-    checks.push('Professional review is recommended because the risk and operating posture may need more expertise.');
-  }
-  if (Number(normalizedProfile.healthScore || 0) < 60) {
-    checks.push('The business health is still below a stronger operating threshold and may benefit from a more structured review.');
-  }
-  if (normalizedProfile.mainRisk) {
-    checks.push(`Main risk to manage: ${normalizedProfile.mainRisk}`);
-  }
-  if (normalizedProfile.currentPhase === 'compliance' || normalizedProfile.currentPhase === 'exit') {
-    checks.push('Review legal, financial, or advisor support before making a large operational change.');
-  }
-
-  return {
-    summary: REVIEW_GATE_MESSAGES[normalizedProfile.currentPhase] || REVIEW_GATE_MESSAGES.operation,
-    checks: [...new Set(checks)].slice(0, 5)
-  };
-};
-
-const buildTrendSummary = (profile) => {
-  const normalizedProfile = normalizeProfile(profile);
-  if (!normalizedProfile) return 'No saved profile is available yet.';
-
-  const history = readProfileHistory();
-  if (!history.length) return 'This is your first profile snapshot. Save a new profile after a few changes to see progress over time.';
-
-  const previous = history[1] || history[0];
-  if (!previous) return 'This is your first profile snapshot. A trend view will appear after another profile is saved.';
-
-  const currentScore = Number(normalizedProfile.healthScore || 0);
-  const previousScore = Number(previous.healthScore || 0);
-  const delta = currentScore - previousScore;
-
-  if (delta > 0) {
-    return `Compared with your last review, the business health increased by ${delta} points.`;
-  }
-  if (delta < 0) {
-    return `Compared with your last review, the business health decreased by ${Math.abs(delta)} points.`;
-  }
-  return 'Compared with your last review, the business health is roughly unchanged.';
-};
-
-const renderSafetyPanel = (profile) => {
-  const safety = buildSafetyChecks(profile);
-  const summaryEl = document.getElementById('safety-summary');
-  const listEl = document.getElementById('safety-checks');
-
-  if (summaryEl) summaryEl.textContent = safety.summary;
-  if (listEl) {
-    listEl.innerHTML = safety.checks.map((item) => `<li>${item}</li>`).join('');
-  }
-
-  const trendEl = document.getElementById('trend-summary');
-  if (trendEl) {
-    trendEl.textContent = buildTrendSummary(profile);
-  }
-};
-
-const renderComparisonTrend = (profile) => {
-  const summary = buildTrendSummary(profile);
-  const target = document.getElementById('trend-summary');
-  if (target) target.textContent = summary;
-};
-
-const renderProfile = (profile) => {
-  const normalizedProfile = normalizeProfile(profile);
-  if (!normalizedProfile) return;
-
-  const dashboard = document.getElementById('dashboard');
-  const phaseTitle = document.getElementById('phase-title');
-  const healthScore = document.getElementById('health-score');
-  const primaryRisk = document.getElementById('primary-risk');
-  const recommendation = document.getElementById('phase-recommendation');
-  const profileSummary = document.getElementById('profile-summary');
-  const riskFlags = document.getElementById('risk-flags');
-  const actionItems = document.getElementById('action-items');
-  const phaseDetail = document.getElementById('phase-detail');
-  const reviewBadge = document.getElementById('review-badge');
-  const healthStatus = document.getElementById('health-status');
-  const phasePlanList = document.getElementById('phase-plan-list');
-
-  phaseTitle.textContent = PHASES[normalizedProfile.currentPhase]?.title || 'Business phase';
-  const scoreValue = Number(normalizedProfile.healthScore || 0);
-  healthScore.textContent = `${scoreValue}/100`;
-  primaryRisk.textContent = normalizedProfile.primaryRisk;
-  recommendation.textContent = renderPhaseText(normalizedProfile.currentPhase);
-  phaseDetail.textContent = renderPhaseDetail(normalizedProfile.currentPhase);
-
-  if (healthStatus) {
-    healthStatus.textContent = getHealthBand(scoreValue);
-    healthStatus.dataset.level = scoreValue >= 80 ? 'strong' : scoreValue >= 60 ? 'healthy' : scoreValue >= 40 ? 'watch' : 'critical';
-  }
-
-  updateScoreRing(scoreValue);
-
-  const summary = [
-    `${normalizedProfile.businessName} is a ${String(normalizedProfile.businessType).replace('-', ' ')} business.`,
-    `Current focus: ${String(normalizedProfile.situation).replace('-', ' ')}.`,
-    `Customer expectation: ${normalizedProfile.customerSummary}`
-  ].join(' ');
-
-  profileSummary.textContent = summary;
-  riskFlags.innerHTML = (normalizedProfile.riskFlags || []).map((item) => `<li>${item}</li>`).join('');
-  actionItems.innerHTML = (normalizedProfile.actionItems || []).map((item) => `<li>${item}</li>`).join('');
-
-  if (phasePlanList) {
-    phasePlanList.innerHTML = generatePhasePlan(normalizedProfile).map((item) => `<li>${item}</li>`).join('');
-  }
-
-  reviewBadge.textContent = normalizedProfile.reviewRecommended ? 'Professional review recommended' : 'Review recommended';
-  reviewBadge.dataset.level = normalizedProfile.reviewRecommended ? 'critical' : 'watch';
-
-  renderSafetyPanel(normalizedProfile);
-  renderComparisonTrend(normalizedProfile);
-
-  const nextStepsPanel = document.getElementById('next-steps-panel');
-  if (nextStepsPanel) {
-    const phaseInfo = PHASES[normalizedProfile.currentPhase] || PHASES.operation;
-    const links = getPhaseLinks(normalizedProfile.currentPhase);
-
-    const checklistLink = document.getElementById('next-steps-checklist-link');
-    const resourcesLink = document.getElementById('next-steps-resources-link');
-    const overviewLink = document.getElementById('next-steps-overview-link');
-    const summaryText = document.getElementById('next-steps-summary');
-
-    if (summaryText) summaryText.textContent = `${phaseInfo.title} focus: ${phaseInfo.guidance}`;
-    if (checklistLink) checklistLink.href = links.checklist;
-    if (resourcesLink) resourcesLink.href = links.resources;
-    if (overviewLink) overviewLink.href = links.overview;
-
-    nextStepsPanel.classList.remove('hidden');
-  }
-
-  trackEvent('dashboard_rendered', {
-    currentPhase: normalizedProfile.currentPhase,
-    healthScore: scoreValue,
-    reviewRecommended: normalizedProfile.reviewRecommended,
-    businessName: normalizedProfile.businessName
-  });
-
-  dashboard.classList.remove('hidden');
-  const intakeSection = document.getElementById('intake');
-  if (intakeSection) intakeSection.classList.add('hidden');
-};
-
-const saveProfile = (profile) => {
-  const normalized = normalizeProfile(profile);
-  if (!normalized) return;
-
+const readWebsiteAnalysis = () => {
   try {
-    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(normalized));
+    const stored = localStorage.getItem(WEBSITE_ANALYZER_KEY);
+    if (!stored) return null;
+    return JSON.parse(stored);
+  } catch (error) {
+    return null;
+  }
+};
+
+const writeWebsiteAnalysis = (report) => {
+  try {
+    localStorage.setItem(WEBSITE_ANALYZER_KEY, JSON.stringify(report));
   } catch (error) {
     // Ignore localStorage write failures in constrained browsers.
   }
-
-  const history = readProfileHistory();
-  const snapshot = {
-    ...normalized,
-    savedAt: new Date().toISOString()
-  };
-  history.unshift(snapshot);
-  writeProfileHistory(history.slice(0, 10));
 };
 
-const bindActions = () => {
-  document.getElementById('start-review-btn')?.addEventListener('click', () => {
-    trackEvent('cta_click', { target: 'start-review-btn' });
-    const intake = document.getElementById('intake');
-    if (intake) intake.classList.remove('hidden');
-    document.getElementById('home')?.scrollIntoView({ behavior: 'smooth' });
-  });
+const clampScore = (value) => Math.max(0, Math.min(10, Number(value) || 0));
 
-  document.getElementById('hero-start-btn')?.addEventListener('click', () => {
-    trackEvent('cta_click', { target: 'hero-start-btn' });
-    const intake = document.getElementById('intake');
-    if (intake) {
-      intake.classList.remove('hidden');
-      intake.scrollIntoView({ behavior: 'smooth' });
-    }
-  });
-
-  document.getElementById('learn-more-btn')?.addEventListener('click', () => {
-    trackEvent('cta_click', { target: 'learn-more-btn' });
-    document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
-  });
-
-  document.getElementById('cancel-form-btn')?.addEventListener('click', () => {
-    trackEvent('form_cancelled', {});
-    const intake = document.getElementById('intake');
-    if (intake) intake.classList.add('hidden');
-    document.getElementById('home')?.scrollIntoView({ behavior: 'smooth' });
-  });
-
-  document.getElementById('edit-profile-btn')?.addEventListener('click', () => {
-    trackEvent('edit_profile_clicked', {});
-    const dashboard = document.getElementById('dashboard');
-    const intake = document.getElementById('intake');
-    if (dashboard) dashboard.classList.add('hidden');
-    if (intake) {
-      intake.classList.remove('hidden');
-      intake.scrollIntoView({ behavior: 'smooth' });
-    }
-  });
-
-  document.getElementById('export-profile-btn')?.addEventListener('click', () => {
-    const profile = loadProfile();
-    if (profile) downloadProfileSummary(profile);
-  });
-
-  document.getElementById('business-form')?.addEventListener('submit', handleFormSubmit);
-};
-
-const initialize = () => {
-  bindRangeValues();
-  bindActions();
-  bindFeedbackWidget();
-  updateScoreRing(72);
-  trackEvent('app_loaded', { userAgent: navigator.userAgent });
-
-  const savedProfile = loadProfile();
-  if (savedProfile) {
-    renderProfile(savedProfile);
+const normalizeUrl = (candidate) => {
+  const raw = String(candidate || '').trim();
+  if (!raw) return null;
+  const withProtocol = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+  try {
+    const url = new URL(withProtocol);
+    if (!['http:', 'https:'].includes(url.protocol)) return null;
+    return url.toString();
+  } catch (error) {
+    return null;
   }
 };
 
-initialize();
+const getHostLabel = (candidate) => {
+  try {
+    const url = new URL(candidate);
+    return url.hostname.replace(/^www\./i, '');
+  } catch (error) {
+    return 'website';
+  }
+};
 
-if (typeof globalThis !== 'undefined') {
-  globalThis.trackEvent = trackEvent;
-  globalThis.getAnalytics = () => readStoredCollection(ANALYTICS_KEY, []);
-  globalThis.getFeedback = () => readStoredCollection(FEEDBACK_KEY, []);
-  globalThis.getProfileHistory = () => readProfileHistory();
-}
+const buildFindingsFromHeaders = (response, pageText) => {
+  const headers = response.headers || {};
+  const findings = [];
+  const hsts = headers.get ? headers.get('strict-transport-security') : null;
+  const csp = headers.get ? headers.get('content-security-policy') : null;
+  const xFrame = headers.get ? headers.get('x-frame-options') : null;
+  const xContent = headers.get ? headers.get('x-content-type-options') : null;
+  const referrer = headers.get ? headers.get('referrer-policy') : null;
+
+  if (!hsts && response.url.startsWith('https://')) findings.push('HSTS is missing, which strongly reduces HTTPS protection quality.');
+  if (!csp) findings.push('No Content-Security-Policy header was detected, which may leave the site more exposed to injection or XSS patterns.');
+  if (!xFrame) findings.push('No X-Frame-Options header was detected. This can make clickjacking riskier.');
+  if (!xContent) findings.push('No X-Content-Type-Options header was detected. MIME confusion risk may be higher.');
+  if (!referrer) findings.push('No Referrer-Policy header was detected. This can make traffic privacy weaker.');
+
+  if (!pageText || !pageText.trim()) findings.push('The homepage returned empty or unreadable content, so the tool could not assess the rendered page in detail.');
+  if ((pageText || '').includes('<html') && !(pageText || '').includes('<h1')) findings.push('The page structure appears minimal or missing a clear semantic heading hierarchy.');
+
+  return findings.slice(0, 5);
+};
+
+const safeGetStatusScore = (status) => {
+  if (status >= 200 && status < 300) return 10;
+  if (status === 403 || status === 401) return 2;
+  if (status >= 300 && status < 400) return 6;
+  return 0;
+};
+
+const buildWebsiteReport = async (url, consent) => {
+  const normalizedUrl = normalizeUrl(url);
+  if (!normalizedUrl) {
+    throw new Error('Enter a valid website URL such as https://example.com');
+  }
+  if (!consent) {
+    throw new Error('You must confirm that you own the website or have permission to scan it before running a scan.');
+  }
+
+  const startedAt = new Date().toISOString();
+  const hostName = getHostLabel(normalizedUrl);
+  const report = {
+    id: `site-scan-${Date.now()}`,
+    url: normalizedUrl,
+    hostName,
+    consented: true,
+    status: 'running',
+    createdAt: startedAt,
+    completedAt: null,
+    scores: {
+      overall: 0,
+      security: 0,
+      exposure: 0,
+      design: 0,
+      performance: 0
+    },
+    findings: [],
+    recommendations: [],
+    blocked: false,
+    note: ''
+  };
+
+  try {
+    const response = await fetch(normalizedUrl, {
+      method: 'GET',
+      mode: 'cors',
+      cache: 'no-store',
+      redirect: 'follow'
+    });
+
+    const pageText = await response.text();
+    const securityScoreRaw = [
+      response.url.startsWith('https://') ? 2 : 0,
+      response.headers.get('strict-transport-security') ? 2 : 0,
+      response.headers.get('content-security-policy') ? 2 : 0,
+      response.headers.get('x-frame-options') ? 1.5 : 0,
+      response.headers.get('x-content-type-options') ? 1.5 : 0,
+      response.headers.get('referrer-policy') ? 1 : 0
+    ].reduce((sum, value) => sum + value, 0);
+
+    const securityScore = clampScore((securityScoreRaw / 10) * 10);
+    const httpAccessibility = safeGetStatusScore(response.status);
+    const exposureScore = clampScore(((httpAccessibility + (response.url.startsWith('https://') ? 2 : 0)) / 12) * 10);
+    const designSignals = [
+      /<h[1-6]/i.test(pageText) ? 2 : 0,
+      /<img[^>]+alt=/i.test(pageText) ? 2 : 0,
+      /<meta[^>]+name=['"]description['"]/i.test(pageText) ? 2 : 0,
+      /<title>/i.test(pageText) ? 2 : 0,
+      /<main|<header|<nav|<section/i.test(pageText) ? 2 : 0
+    ].reduce((sum, value) => sum + value, 0);
+    const designScore = clampScore((designSignals / 10) * 10);
+    const performanceScore = clampScore(Math.max(0, 10 - Math.min(10, (pageText.length / 16000))));
+
+    const findings = buildFindingsFromHeaders(response, pageText);
+    const recommendations = [
+      'Add security headers like HSTS, CSP, and Referrer-Policy for stronger hardening.',
+      'Improve semantic structure with clear headings and descriptive alt text for meaningful content.',
+      'Use a staging or owner-approved URL if you want a more detailed page-level audit.'
+    ];
+
+    const overallScore = Math.round(
+      (securityScore * 0.3 + exposureScore * 0.25 + designScore * 0.25 + performanceScore * 0.2)
+    );
+
+    const finalReport = {
+      ...report,
+      status: 'complete',
+      completedAt: new Date().toISOString(),
+      blocked: response.status === 403 || response.status === 401 || response.status >= 500,
+      note: response.status === 403 || response.status === 401 ? 'This site blocked the public scan, which reduces what the tool can assess.' : 'The site was reachable and a safe passive audit was completed.',
+      scores: {
+        overall: overallScore,
+        security: Math.round(securityScore),
+        exposure: Math.round(exposureScore),
+        design: Math.round(designScore),
+        performance: Math.round(performanceScore)
+      },
+      findings: findings.length ? findings : ['No critical issues were found in the passive scan, though a deeper audit may still be useful.'],
+      recommendations
+    };
+
+    writeWebsiteAnalysis(finalReport);
+    return finalReport;
+  } catch (error) {
+    const finalReport = {
+      ...report,
+      status: 'blocked',
+      completedAt: new Date().toISOString(),
+      blocked: true,
+      note: "The scanner could not access the site publicly. This usually means the site blocks automated checks, requires authentication, or is behind a WAF.",
+      scores: {
+        overall: 0,
+        security: 8,
+        exposure: 2,
+        design: 0,
+        performance: 0
+      },
+      findings: [
+        'The website blocked the public scan, so the tool could not evaluate the rendered page content.',
+        'This usually represents a security-hardening signal, but it also means the site is not easily accessible to automated review tools.',
+        'If you own the site, provide a public staging URL or an owner-approved workflow to unlock a more detailed audit.'
+      ],
+      recommendations: [
+        'Confirm ownership and enable a public staging environment for a deeper audit.',
+        'Use a simple, public URL for the scan if you want a basic accessibility and security assessment.',
+        'If the site is intentionally hardened, document the decision and consider a guided professional review instead.'
+      ]
+    };
+
+    writeWebsiteAnalysis(finalReport);
+    return finalReport;
+  }
+};
+
+const renderWebsiteReport = (report) => {
+  const card = document.getElementById('website-report-card');
+  const urlField = document.getElementById('website-report-url');
+  const overallValue = document.getElementById('report-overall-score');
+  const securityValue = document.getElementById('report-security-score');
+  const exposureValue = document.getElementById('report-exposure-score');
+  const designValue = document.getElementById('report-design-score');
+  const performanceValue = document.getElementById('report-performance-score');
+  const summaryText = document.getElementById('website-report-summary');
+  const findingsList = document.getElementById('website-findings');
+  const recommendationsList = document.getElementById('website-recommendations');
+  const statusTag = document.getElementById('website-status-pill');
+
+  if (!card) return;
+
+  card.classList.remove('hidden');
+  if (urlField) urlField.textContent = report.url;
+  if (overallValue) overallValue.textContent = `${report.scores.overall || 0}/10`;
+  if (securityValue) securityValue.textContent = `${report.scores.security || 0}/10`;
+  if (exposureValue) exposureValue.textContent = `${report.scores.exposure || 0}/10`;
+  if (designValue) designValue.textContent = `${report.scores.design || 0}/10`;
+  if (performanceValue) performanceValue.textContent = `${report.scores.performance || 0}/10`;
+  if (summaryText) summaryText.textContent = report.note || 'The passive audit completed successfully.';
+  if (statusTag) {
+    statusTag.textContent = report.status === 'blocked' ? 'Blocked' : 'Completed';
+    statusTag.dataset.state = report.status === 'blocked' ? 'blocked' : 'done';
+  }
+
+  if (findingsList) {
+    findingsList.innerHTML = (report.findings || []).map((item) => `<li>${item}</li>`).join('');
+  }
+  if (recommendationsList) {
+    recommendationsList.innerHTML = (report.recommendations || []).map((item) => `<li>${item}</li>`).join('');
+  }
+
+  trackEvent('website_scan_complete', {
+    website: report.url,
+    overall: report.scores.overall,
+    status: report.status,
+    blocked: !!report.blocked
+  });
+};
+
+const hydrateWebsiteReport = () => {
+  const report = readWebsiteAnalysis();
+  if (!report) return;
+  renderWebsiteReport(report);
+};
+
+const handleWebsiteScan = async (event) => {
+  event.preventDefault();
+
+  const input = document.getElementById('website-url');
+  const consent = document.getElementById('scan-consent');
+  const errorBox = document.getElementById('website-scan-error');
+  const button = document.getElementById('website-scan-btn');
+  const statusText = document.getElementById('website-status-text');
+
+  if (!input || !consent) return;
+
+  if (!consent.checked) {
+    if (errorBox) {
+      errorBox.textContent = 'You must confirm that you own the website or have permission to scan it.';
+      errorBox.classList.remove('hidden');
+    }
+    return;
+  }
+
+  const normalizedUrl = normalizeUrl(input.value);
+  if (!normalizedUrl) {
+    if (errorBox) {
+      errorBox.textContent = 'Please enter a valid URL like https://example.com';
+      errorBox.classList.remove('hidden');
+    }
+    return;
+  }
+
+  if (errorBox) errorBox.classList.add('hidden');
+  if (button) button.disabled = true;
+  if (statusText) statusText.textContent = 'Running a safe public audit…';
+
+  trackEvent('website_scan_started', { website: normalizedUrl });
+
+  try {
+    const report = await buildWebsiteReport(normalizedUrl, true);
+    renderWebsiteReport(report);
+    if (statusText) statusText.textContent = report.status === 'blocked' ? 'Public scan blocked — report ready.' : 'Report ready.';
+  } catch (error) {
+    if (errorBox) {
+      errorBox.textContent = error.message || 'We could not complete the scan.';
+      errorBox.classList.remove('hidden');
+    }
+    if (statusText) statusText.textContent = 'The scan could not complete.';
+  } finally {
+    if (button) button.disabled = false;
+  }
+};
+
+const bindWebsiteScan = () => {
+  const form = document.getElementById('website-scan-form');
+  if (form) form.addEventListener('submit', handleWebsiteScan);
+};
+
+const hydrateLocalTelemetry = () => {
+  const analytics = readStoredCollection(ANALYTICS_KEY, []);
+  if (!analytics.length) {
+    writeStoredCollection(ANALYTICS_KEY, [{
+      eventName: 'local_tracking_initialized',
+      payload: { mode: 'local-first' },
+      timestamp: new Date().toISOString()
+    }]);
+  }
+};
+
+bindWebsiteScan();
+hydrateWebsiteReport();
+hydrateLocalTelemetry();
