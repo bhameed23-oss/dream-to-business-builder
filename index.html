@@ -22,6 +22,7 @@
           <a href="#how-it-works">How it works</a>
           <a href="#phases">Lifecycle</a>
           <a href="#safety">Safety</a>
+          <a href="#website-grade">Website grade</a>
           <a class="nav-sister" href="https://belvi.casa" rel="noopener">Belvi.casa ↗</a>
         </nav>
         <button class="primary-btn" id="start-review-btn">Start your review</button>
@@ -87,6 +88,66 @@
         </div>
       </section>
 
+      <section id="website-grade" class="section alt-section website-grade-section">
+        <div class="container website-grade-wrapper">
+          <div class="header-row">
+            <div>
+              <p class="eyebrow">Website grade</p>
+              <h2>Public website report card</h2>
+            </div>
+            <span class="grade-pill">Passive public review</span>
+          </div>
+          <form id="website-scan-form" class="website-scan-form">
+            <label class="scan-url-label" for="website-url">Website URL</label>
+            <div class="scan-input-row">
+              <input id="website-url" name="website-url" type="url" placeholder="https://yourwebsite.com" required />
+              <button type="submit" id="website-scan-btn" class="primary-btn">Run safe grade</button>
+            </div>
+            <label class="consent-row" for="scan-consent">
+              <input id="scan-consent" type="checkbox" />
+              <span>I own this website or have permission to run a public scan.</span>
+            </label>
+            <p id="website-status-text" class="status-text">Ready for a safe public assessment.</p>
+            <div id="website-scan-error" class="error-box hidden" aria-live="polite"></div>
+          </form>
+
+          <article id="website-report-card" class="hidden report-card">
+            <div class="report-header-row">
+              <div>
+                <p class="mini-label">Report result</p>
+                <h3 id="website-report-url">site.example</h3>
+              </div>
+              <span id="website-status-pill" class="report-badge" data-state="done">Completed</span>
+            </div>
+            <div class="report-score-grid">
+              <div class="report-score-ring">
+                <span>Overall</span>
+                <strong id="report-overall-score">0/10</strong>
+              </div>
+              <div class="score-chip-box">
+                <div class="score-chip"><label>Security</label><strong id="report-security-score">0/10</strong></div>
+                <div class="score-chip"><label>Exposure</label><strong id="report-exposure-score">0/10</strong></div>
+                <div class="score-chip"><label>Design</label><strong id="report-design-score">0/10</strong></div>
+                <div class="score-chip"><label>Performance</label><strong id="report-performance-score">0/10</strong></div>
+              </div>
+            </div>
+            <div class="report-copy">
+              <p id="website-report-summary">The public grade is ready.</p>
+            </div>
+            <div class="report-body-grid">
+              <div>
+                <h4>Findings</h4>
+                <ul id="website-findings"></ul>
+              </div>
+              <div>
+                <h4>Recommended next steps</h4>
+                <ul id="website-recommendations"></ul>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
       <section id="intake" class="section form-section hidden">
         <div class="container form-wrapper">
           <p class="eyebrow">Start with the current state of your business</p>
@@ -147,6 +208,7 @@
             <article class="panel wide-panel phase-panel"><h3>Why this phase matters</h3><p id="phase-detail"></p></article>
             <article class="panel wide-panel"><h3>30-90 day plan</h3><ul id="phase-plan-list"></ul></article>
             <article class="panel wide-panel"><h3>Safety and review</h3><p id="safety-summary"></p><ul id="safety-checks"></ul></article>
+            <article class="panel wide-panel"><h3>Progress over time</h3><p id="trend-summary"></p></article>
             <article class="panel wide-panel next-steps-panel hidden" id="next-steps-panel">
               <h3>Your next steps</h3>
               <p id="next-steps-summary"></p>
