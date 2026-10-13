@@ -1,0 +1,10 @@
+{
+  "name": "dream-to-business-builder",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Passive website-grade review and business lifecycle guidance app.",
+  "dependencies": {
+    "playwright": "^1.48.0"
+  }
+}
