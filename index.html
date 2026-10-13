@@ -7,13 +7,10 @@
     <meta name="description" content="A practical lifecycle review for founders and business owners across creation, operations, growth, risk, and exit readiness." />
     <meta name="theme-color" content="#16352A" />
 
-    <!-- Google Fonts: Newsreader (headings) and Instrument Sans (body & UI) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..600&family=Instrument+Sans:wght@400;500;600;700&display=swap" />
-
-    <!-- Belvi Arch + Growth vector icon in brand moss and brass -->
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%232C4A3B'/%3E%3Cpath d='M32 14 C22 14 18 20 18 30 L18 50 L46 50 L46 30 C46 20 42 14 32 14 Z' fill='none' stroke='%23B0864A' stroke-width='3.5'/%3E%3Cpath d='M23 38 L30 31 L35 36 L41 26' fill='none' stroke='%23FFFDFA' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%232C4A3B'/%3E%3Cpath d='M32 14 C22 14 18 20 18 28 L18 36 C18 46 24 52 32 52 C40 52 46 46 46 36 L46 28 C46 20 42 14 32 14 Z M26 28 C26 23 28 20 32 20 C36 20 38 23 38 28 L38 36 C38 41 36 44 32 44 C28 44 26 41 26 36 Z' fill='%23caa56a'/%3E%3C/svg%3E" />
     <link rel="stylesheet" href="app/styles.css" />
   </head>
   <body>
@@ -25,7 +22,6 @@
           <a href="#how-it-works">How it works</a>
           <a href="#phases">Lifecycle</a>
           <a href="#safety">Safety</a>
-          <!-- Small cross-link to sister site Belvi.casa -->
           <a class="nav-sister" href="https://belvi.casa" rel="noopener">Belvi.casa ↗</a>
         </nav>
         <button class="primary-btn" id="start-review-btn">Start your review</button>
@@ -98,8 +94,24 @@
           <form id="business-form">
             <div class="form-grid">
               <label>Business name<input type="text" name="businessName" placeholder="Example Studio" /></label>
-              <label>Business type<select name="businessType"><option value="service-business">Service business</option><option value="product-business">Product business</option><option value="online-business">Online business</option><option value="consulting">Consulting</option><option value="local-business">Local business</option><option value="creative-business">Creative business</option></select></label>
-              <label>What situation best fits your business right now?<select name="situation"><option value="new-business">Starting a new business</option><option value="improve-existing">Improving an existing business</option><option value="grow-business">Growing the business</option><option value="fix-risk">Fixing risk or compliance gaps</option><option value="system-upgrade">Upgrading systems or automation</option><option value="prepare-exit">Preparing to exit or transfer</option></select></label>
+              <label>Business type<select name="businessType">
+                <option value="service-business">Service business</option>
+                <option value="product-business">Product business</option>
+                <option value="online-business">Online business</option>
+                <option value="local-business">Local business</option>
+                <option value="real-estate">Real estate</option>
+                <option value="restaurant">Restaurant</option>
+                <option value="enterprise">Enterprise</option>
+                <option value="auto-body-shop">Auto body shop</option>
+                <option value="barber-shop">Barber shop</option>
+                <option value="cleaning-service">Cleaning service</option>
+                <option value="construction">Construction</option>
+                <option value="dental-office">Dental office</option>
+                <option value="legal-office">Legal office</option>
+                <option value="nail-salon">Nail salon</option>
+                <option value="nonprofit">Nonprofit</option>
+              </select></label>
+              <label>What situation best fits your business right now?<select name="situation"><option value="new-business">Starting a new business</option><option value="improve-existing">Improving an existing business</option><option value="grow-business">Growing a business</option><option value="fix-risk">Fixing risk or operational issues</option><option value="system-upgrade">Upgrading systems and automation</option><option value="prepare-exit">Preparing for exit, sale, or transition</option></select></label>
               <label>How clear is your business direction?<input type="range" id="clarity" name="clarity" min="1" max="5" value="3" /><span id="clarity-value" class="range-value">3 / 5</span></label>
               <label>How stable are your current operations?<input type="range" id="operations" name="operations" min="1" max="5" value="3" /><span id="operations-value" class="range-value">3 / 5</span></label>
               <label>How strong is your risk and compliance posture?<input type="range" id="riskPosture" name="riskPosture" min="1" max="5" value="3" /><span id="riskPosture-value" class="range-value">3 / 5</span></label>
@@ -109,11 +121,11 @@
               <label>If you had to sell or hand off the business today, how easy would that be?<input type="range" id="exitReadiness" name="exitReadiness" min="1" max="5" value="3" /><span id="exitReadiness-value" class="range-value">3 / 5</span></label>
             </div>
             <div class="textarea-grid">
-              <label>Biggest goals over the next 30–90 days?<textarea name="goals" rows="4" placeholder="Improve customer flow, reduce delay, increase clarity..." ></textarea></label>
-              <label>Biggest pain points right now?<textarea name="painPoints" rows="4" placeholder="Manual follow-up, unclear buying process..." ></textarea></label>
-              <label>Main risk you are trying to manage?<textarea name="mainRisk" rows="4" placeholder="Operational inconsistency, compliance drift..." ></textarea></label>
-              <label>Tools or systems you use today?<textarea name="tools" rows="4" placeholder="CRM, scheduling, invoicing, spreadsheets..." ></textarea></label>
-              <label>What does a good customer experience look like?<textarea name="customerSummary" rows="4" placeholder="Fast, clear, trustworthy, consistent..." ></textarea></label>
+              <label>Biggest goals over the next 30–90 days?<textarea name="goals" rows="4" placeholder="Improve customer flow, reduce delay, increase clarity..."></textarea></label>
+              <label>Biggest pain points right now?<textarea name="painPoints" rows="4" placeholder="Manual follow-up, unclear buying process..."></textarea></label>
+              <label>Main risk you are trying to manage?<textarea name="mainRisk" rows="4" placeholder="Operational inconsistency, compliance drift..."></textarea></label>
+              <label>Tools or systems you use today?<textarea name="tools" rows="4" placeholder="CRM, scheduling, invoicing, spreadsheets..."></textarea></label>
+              <label>What does a good customer experience look like?<textarea name="customerSummary" rows="4" placeholder="Fast, clear, trustworthy, consistent..."></textarea></label>
             </div>
             <div class="actions-row"><button type="submit" class="primary-btn">Generate business profile</button><button type="button" class="secondary-btn" id="cancel-form-btn">Back to home</button></div>
           </form>
@@ -122,7 +134,7 @@
 
       <section id="dashboard" class="section hidden">
         <div class="container dashboard-wrapper">
-          <div class="dashboard-header"><div><p class="eyebrow">Your current business view</p><h2 id="phase-title">Business phase</h2></div><div class="header-actions"><span id="review-badge" class="review-badge">Review recommended</span><button class="secondary-btn" id="export-profile-btn">Download summary</button><button class="secondary-btn" id="edit-profile-btn">Edit profile</button></div></div>
+          <div class="dashboard-header"><div><p class="eyebrow">Your current business view</p><h2 id="phase-title">Business phase</h2></div><div class="header-actions"><span id="review-badge" class="review-badge">Review recommended</span><button class="secondary-btn" id="edit-profile-btn">Edit profile</button><button class="primary-btn" id="export-profile-btn">Export</button></div></div>
           <div class="stats-grid">
             <div class="stat-card accent"><span>Business health</span><strong id="health-score">0/100</strong><span id="health-status-dashboard" class="health-status-inline">Healthy</span></div>
             <div class="stat-card"><span>Primary risk</span><strong id="primary-risk">-</strong></div>
@@ -133,6 +145,7 @@
             <article class="panel"><h3>Top risks</h3><ul id="risk-flags"></ul></article>
             <article class="panel wide-panel"><h3>Next best actions</h3><ul id="action-items"></ul></article>
             <article class="panel wide-panel phase-panel"><h3>Why this phase matters</h3><p id="phase-detail"></p></article>
+            <article class="panel wide-panel"><h3>30-90 day plan</h3><ul id="phase-plan-list"></ul></article>
             <article class="panel wide-panel next-steps-panel hidden" id="next-steps-panel">
               <h3>Your next steps</h3>
               <p id="next-steps-summary"></p>
